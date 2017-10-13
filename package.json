@@ -5,24 +5,28 @@
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
   "bin": {
-    "vvc": "./dist/index.js"
+    "vvc": "./dist/index.js",
+    "vvc-login": "./dist/login.js",
+    "vvc-widget": "./dist/widget.js",
+    "vvc-widget-init": "./dist/widget-init.js"
   },
   "scripts": {
     "clean": "rimraf dist coverage .nyc_output node_modules",
     "prebuild": "rimraf dist",
     "build": "tsc",
-    "precommit": "npm run build && npm run cover && npm run check-coverage",
+    "_precommit": "npm run build && npm run cover && npm run check-coverage",
+    "precommit": "npm run build",
     "commit": "git-cz",
     "check-coverage": "nyc check-coverage --statements 100 --branches 100 --functions 100 --lines 100",
     "report-coverage": "cat ./coverage/lcov.info | coveralls",
     "watch:test": "npm t -- -w",
-    "test": "mocha src/*.test.js",
+    "test": "mocha test/*.test.js",
     "cover": "nyc --reporter=lcov --reporter=text npm t",
     "semantic-release": "semantic-release pre && npm publish && semantic-release post"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/vivocha/vvcvvc.git"
+    "url": "https://github.com/vivocha/vvc.git"
   },
   "keywords": [
     "vivocha",
@@ -44,23 +48,26 @@
   },
   "homepage": "https://github.com/vivocha/vvc#readme",
   "dependencies": {
-    "commander": "^2.11.0"
+    "commander": "^2.11.0",
+    "prompt": "^1.0.0",
+    "request": "^2.83.0"
   },
   "devDependencies": {
-    "@types/commander": "^2.9.2",
-    "@types/node": "8.0.30",
+    "@types/commander": "^2.11.0",
+    "@types/node": "8.0.34",
+    "@types/request": "^2.0.5",
     "chai": "4.1.2",
     "chai-as-promised": "7.1.1",
     "chai-spies": "0.7.1",
     "commitizen": "2.9.6",
-    "coveralls": "2.13.1",
+    "coveralls": "3.0.0",
     "cz-conventional-changelog": "2.0.0",
     "husky": "0.14.3",
-    "mocha": "3.5.3",
+    "mocha": "4.0.1",
     "nyc": "11.2.1",
     "rimraf": "2.6.2",
     "semantic-release": "^8.0.3",
-    "typescript": "2.5.2"
+    "typescript": "2.5.3"
   },
   "config": {
     "commitizen": {
