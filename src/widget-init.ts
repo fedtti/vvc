@@ -2,7 +2,7 @@
 
 import * as program from 'commander';
 import * as request from 'request';
-import { Config, read as readConfig } from './config';
+import { Config, read as readConfig } from './lib/config';
 
 const meta = require(__dirname + '/../package.json');
 

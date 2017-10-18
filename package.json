@@ -48,9 +48,11 @@
   },
   "homepage": "https://github.com/vivocha/vvc#readme",
   "dependencies": {
+    "@vivocha/public-entities": "^1.0.2",
     "commander": "^2.11.0",
     "prompt": "^1.0.0",
-    "request": "^2.83.0"
+    "request": "^2.83.0",
+    "walkdir": "0.0.12"
   },
   "devDependencies": {
     "@types/commander": "^2.11.0",

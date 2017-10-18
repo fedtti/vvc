@@ -5,7 +5,7 @@ import { URL } from 'url';
 import * as program from 'commander';
 import * as prompt from 'prompt';
 import * as request from 'request';
-import { Config, read as readConfig, write as writeConfig } from './config';
+import { Config, read as readConfig, write as writeConfig } from './lib/config';
 
 const meta = require(__dirname + '/../package.json');
 
