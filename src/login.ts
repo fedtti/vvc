@@ -3,7 +3,7 @@
 import { promisify } from 'util';
 import { URL } from 'url';
 import * as program from 'commander';
-import * as prompt from 'prompt';
+import * as inquirer from 'inquirer';
 import * as request from 'request';
 import { Config, read as readConfig, write as writeConfig } from './lib/config';
 
@@ -13,27 +13,24 @@ program
   .version(meta.version)
   .parse(process.argv);
 
-prompt.start();
-prompt.message = '';
-
 (async () => {
   try {
-    const data = await promisify(prompt.get)([
+    const data = await inquirer.prompt([
       {
         name: 'acct_id',
-        required: true,
-        message: 'Account ID'
+        message: 'Account ID',
+        validate: v => !!v
       },
       {
         name: 'user_id',
-        required: true,
-        message: 'Username'
+        message: 'Username',
+        validate: v => !!v
       },
       {
         name: 'password',
-        required: true,
-        hidden: true,
-        message: 'Password'
+        type: 'password',
+        message: 'Password',
+        validate: v => !!v
       }
     ]);
     const server: string = await new Promise<string>((resolve, reject) => {

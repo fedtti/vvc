@@ -8,7 +8,8 @@
     "vvc": "./dist/index.js",
     "vvc-login": "./dist/login.js",
     "vvc-widget": "./dist/widget.js",
-    "vvc-widget-init": "./dist/widget-init.js"
+    "vvc-widget-init": "./dist/widget-init.js",
+    "vvc-widget-push": "./dist/widget-push.js"
   },
   "scripts": {
     "clean": "rimraf dist coverage .nyc_output node_modules",
@@ -48,16 +49,19 @@
   },
   "homepage": "https://github.com/vivocha/vvc#readme",
   "dependencies": {
-    "@vivocha/public-entities": "^1.0.2",
+    "@vivocha/public-entities": "^1.0.3",
     "commander": "^2.11.0",
-    "prompt": "^1.0.0",
+    "inquirer": "^3.3.0",
+    "jsonpolice": "^7.0.2",
+    "lodash": "^4.17.4",
     "request": "^2.83.0",
     "walkdir": "0.0.12"
   },
   "devDependencies": {
     "@types/commander": "^2.11.0",
-    "@types/node": "8.0.34",
-    "@types/request": "^2.0.5",
+    "@types/inquirer": "0.0.35",
+    "@types/node": "8.0.45",
+    "@types/request": "^2.0.6",
     "chai": "4.1.2",
     "chai-as-promised": "7.1.1",
     "chai-spies": "0.7.1",
@@ -68,7 +72,7 @@
     "mocha": "4.0.1",
     "nyc": "11.2.1",
     "rimraf": "2.6.2",
-    "semantic-release": "^8.0.3",
+    "semantic-release": "^8.2.0",
     "typescript": "2.5.3"
   },
   "config": {

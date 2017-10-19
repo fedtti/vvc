@@ -1,0 +1,171 @@
+[
+  {
+    "id": "NAME",
+    "values": {
+      "en": {
+        "value": "Popup",
+        "state": "new"
+      },
+      "it": {
+        "value": "Popup",
+        "state": "new"
+      }
+    }
+  },
+  {
+    "id": "DESCRIPTION",
+    "values": {
+      "en": {
+        "value": "Default Popup",
+        "state": "new"
+      },
+      "it": {
+        "value": "Popup predefinito",
+        "state": "new"
+      }
+    }
+  },
+  {
+    "id": "VARIABLES.PRIMARY",
+    "values": {
+      "en": {
+        "value": "Primary color",
+        "state": "new"
+      },
+      "it": {
+        "value": "Colore primario",
+        "state": "new"
+      }
+    }
+  },
+  {
+    "id": "VARIABLES.THEME",
+    "values": {
+      "en": {
+        "value": "Theme",
+        "state": "new"
+      },
+      "it": {
+        "value": "Variante",
+        "state": "new"
+      }
+    }
+  },
+  {
+    "id": "VARIABLES.USE_COMPANY_LOGO",
+    "values": {
+      "en": {
+        "value": "Use the company logo",
+        "state": "new"
+      },
+      "it": {
+        "value": "Inserire il logo aziendale",
+        "state": "new"
+      }
+    }
+  },
+  {
+    "id": "VARIABLES.COMPANY_LOGO",
+    "values": {
+      "en": {
+        "value": "Company logo",
+        "state": "new"
+      },
+      "it": {
+        "value": "Logo aziendale",
+        "state": "new"
+      }
+    }
+  },
+  {
+    "id": "VARIABLES.ARTBOARD",
+    "values": {
+      "en": {
+        "value": "Main image",
+        "state": "new"
+      },
+      "it": {
+        "value": "Immagine principale",
+        "state": "new"
+      }
+    }
+  },
+  {
+    "id": "STRINGS.TITLE",
+    "values": {
+      "en": {
+        "value": "Need help?",
+        "state": "new"
+      },
+      "it": {
+        "value": "Serve aiuto?",
+        "state": "new"
+      }
+    }
+  },
+  {
+    "id": "STRINGS.MESSAGE1",
+    "values": {
+      "en": {
+        "value": "Our agents are available to help you. Don't hesitate to contact us!",
+        "state": "new"
+      },
+      "it": {
+        "value": "I nostri operatori sono a tua disposizione. Contattaci!",
+        "state": "new"
+      }
+    }
+  },
+  {
+    "id": "STRINGS.MESSAGE2",
+    "values": {
+      "en": {
+        "value": "How would you like to contact us?",
+        "state": "new"
+      },
+      "it": {
+        "value": "Come desideri contattacti?",
+        "state": "new"
+      }
+    }
+  },
+  {
+    "id": "STRINGS.CHAT",
+    "values": {
+      "en": {
+        "value": "CHAT",
+        "state": "new"
+      },
+      "it": {
+        "value": "CHAT",
+        "state": "new"
+      }
+    }
+  },
+  {
+    "id": "STRINGS.VOICE",
+    "values": {
+      "en": {
+        "value": "VOICE",
+        "state": "new"
+      },
+      "it": {
+        "value": "VOCE",
+        "state": "new"
+      }
+    }
+  },
+  {
+    "id": "STRINGS.VIDEO",
+    "values": {
+      "en": {
+        "value": "VIDEO",
+        "state": "new"
+      },
+      "it": {
+        "value": "VIDEO",
+        "state": "new"
+      }
+    }
+  }
+]
