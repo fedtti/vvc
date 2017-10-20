@@ -6,11 +6,12 @@ import { promisify } from 'util';
 import * as program from 'commander';
 import * as jsonpolice from 'jsonpolice';
 import { Asset, WidgetManifest, MultiLanguageString } from '@vivocha/public-entities';
+import { meta } from './lib/config';
 import { ws, wsUrl, retriever } from './lib/ws';
 import { uploadWidgetStringChanges } from './lib/strings';
 import { scanWidgetAssets, hashWidgetAssets, uploadWidgetAssetChanges } from './lib/assets';
+import { checkLoginAndVersion } from './lib/startup';
 
-const meta = require(__dirname + '/../package.json');
 const access = promisify(fs.access);
 
 program
@@ -23,6 +24,8 @@ program
   let exitCode = 0;
 
   try {
+    await checkLoginAndVersion();
+
     // change to the widget directory
     if (program.directory !== startDir) {
       process.chdir(program.directory);

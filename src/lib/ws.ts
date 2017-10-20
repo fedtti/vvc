@@ -1,7 +1,6 @@
+import * as fs from 'fs';
 import * as request from 'request';
-import { Config, read as readConfig } from './config';
-
-const _config: Promise<Config> = readConfig();
+import { read as readConfig } from './config';
 
 export class RequestError extends Error {
   constructor(public originalError: any, public response: any, public body: any) {
@@ -10,7 +9,7 @@ export class RequestError extends Error {
 }
 
 export async function ws(path: string, opts?: any, okStatusCodes: number[] = [ 200, 201 ]): Promise<any> {
-  const config = await _config;
+  const config = await readConfig();
   const url = await wsUrl(path);
   return new Promise((resolve, reject) => {
     request(Object.assign({
@@ -33,7 +32,7 @@ export async function ws(path: string, opts?: any, okStatusCodes: number[] = [ 2
 }
 
 export async function wsUrl(path: string): Promise<string> {
-  const config = await _config;
+  const config = await readConfig();
   return `https://${config.server}/a/${config.acct_id}/api/v2/${path}`;
 }
 
@@ -50,5 +49,11 @@ export async function retriever(url: string): Promise<any> {
         resolve(body);
       }
     });
+  });
+}
+
+export async function download(url, filename) {
+  return new Promise((resolve, reject) => {
+    request(url).pipe(fs.createWriteStream(filename).on('close', resolve).on('error', reject));
   });
 }

@@ -1,13 +1,10 @@
 #!/usr/bin/env node
 
-import { promisify } from 'util';
 import { URL } from 'url';
 import * as program from 'commander';
 import * as inquirer from 'inquirer';
 import * as request from 'request';
-import { Config, read as readConfig, write as writeConfig } from './lib/config';
-
-const meta = require(__dirname + '/../package.json');
+import { Config, read as readConfig, write as writeConfig, meta } from './lib/config';
 
 program
   .version(meta.version)
@@ -55,7 +52,7 @@ program
         method: 'POST',
         json: true,
         body: {
-          scope: [ 'Widget.*', 'Asset.*', 'String.*' ],
+          scope: [ 'Widget.*', 'Asset.*', 'String.*', 'Reflect.cli' ],
           user_id: data.user_id
         },
         auth: {

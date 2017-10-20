@@ -1,4 +1,5 @@
 import * as fs from 'fs';
+import * as _ from 'lodash';
 import { promisify } from 'util';
 
 export interface Config {
@@ -6,17 +7,28 @@ export interface Config {
   user_id: string;
   secret: string;
   server: string;
+  info: any;
 }
 
+export const meta =  require(__dirname + '/../../package.json');
 const _config_file_dir = `${process.env.HOME}/.vvc`;
 const _config_file_path = `${_config_file_dir}/config.json`;
+let config: Promise<Config>;
 
-export async function read(): Promise<Config> {
+async function innerRead(): Promise<Config> {
   const raw = await promisify(fs.readFile)(_config_file_path, 'utf8');
   return JSON.parse(raw.toString());
 }
 
-export async function write(config:Config) {
+
+export async function read(force: boolean = false): Promise<Config> {
+  if (!config || force) {
+    config = innerRead();
+  }
+  return config;
+}
+
+export async function write(newConfig:Config): Promise<Config> {
   try {
     const stat = await promisify(fs.stat)(_config_file_dir);
     if (!stat.isDirectory()) {
@@ -31,5 +43,6 @@ export async function write(config:Config) {
     await promisify(fs.mkdir)(_config_file_dir);
   }
 
-  return promisify(fs.writeFile)(_config_file_path, JSON.stringify(config, null , 2));
+  await promisify(fs.writeFile)(_config_file_path, JSON.stringify(_.omit(newConfig, [ 'info']), null , 2));
+  return config = Promise.resolve(newConfig);
 }

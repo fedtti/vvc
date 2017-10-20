@@ -1,8 +1,7 @@
 #!/usr/bin/env node
 
 import * as program from 'commander';
-
-const meta = require(__dirname + '/../package.json');
+import { meta } from './lib/config';
 
 program
   .version(meta.version)

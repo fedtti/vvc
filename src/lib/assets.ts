@@ -3,11 +3,14 @@ import * as path  from 'path';
 import * as crypto from 'crypto';
 import { promisify } from 'util';
 import * as walk from 'walkdir';
+import * as _mkdirp from 'mkdirp';
 import { Asset } from '@vivocha/public-entities';
-import { ws } from './ws';
+import { Config, read as readConfig } from './config';
+import { ws, download } from './ws';
 
 const stat = promisify(fs.stat);
 const access = promisify(fs.access);
+const mkdirp = promisify(_mkdirp);
 
 export async function scanWidgetAssets(basepath: string): Promise<Asset[]> {
   const assets: Promise<Asset>[] = [];
@@ -71,7 +74,7 @@ export function hashWidgetAssets(assets: Asset[]): Promise<Asset[]> {
   });
   return Promise.all(hashedAssets);
 }
-export async function uploadWidgetAssetChanges(widgetId, oldAssets: Asset[], newAssets: Asset[]) {
+export async function uploadWidgetAssetChanges(widgetId: string, oldAssets: Asset[], newAssets: Asset[]) {
   async function upload(asset: Asset): Promise<Asset> {
     try {
       let data = await ws(`widgets/${widgetId}/upload`, {
@@ -115,5 +118,31 @@ export async function uploadWidgetAssetChanges(widgetId, oldAssets: Asset[], new
       if (o.size) n.size = o.size;
       if (o.type) n.type = o.type;
     }
+  }
+}
+
+async function downloadAsset(url: string, filename: string) {
+  const pathInfo = path.parse(filename);
+  if (pathInfo.dir) {
+    await access(pathInfo.dir).then(async () => {
+      const statInfo = await stat(pathInfo.dir).catch(() => {
+        throw `Cannot access destination path \'${pathInfo.dir}\'`;
+      });
+      if (!statInfo.isDirectory()) {
+        throw `Destination path ${pathInfo.dir} exists and it\'s not a directory`;
+      }
+    }, async () => {
+      await mkdirp(pathInfo.dir).catch(() => {
+        throw `Cannot create path ${pathInfo.dir}`;
+      });
+    });
+  }
+  console.log(`Downloading ${filename}`);
+  await download(url, filename);
+}
+export async function downloadAssets(assets: Asset[]) {
+  const config: Config = await readConfig();
+  for (let a of assets) {
+    await downloadAsset(`${config.info.assets}${a.id}`, a.path);
   }
 }
