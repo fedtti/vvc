@@ -7,10 +7,7 @@
   "bin": {
     "vvc": "./dist/index.js",
     "vvc-login": "./dist/login.js",
-    "vvc-widget": "./dist/widget.js",
-    "vvc-widget-init": "./dist/widget-init.js",
-    "vvc-widget-push": "./dist/widget-push.js",
-    "vvc-widget-pull": "./dist/widget-pull.js"
+    "vvc-widget": "./dist/widget.js"
   },
   "scripts": {
     "clean": "rimraf dist coverage .nyc_output node_modules",
@@ -50,7 +47,7 @@
   },
   "homepage": "https://github.com/vivocha/vvc#readme",
   "dependencies": {
-    "@vivocha/public-entities": "^1.0.3",
+    "@vivocha/public-entities": "^5.9.8",
     "commander": "^2.11.0",
     "inquirer": "^3.3.0",
     "jsonpolice": "^7.0.2",
@@ -64,21 +61,21 @@
     "@types/commander": "^2.11.0",
     "@types/inquirer": "0.0.35",
     "@types/mkdirp": "^0.5.1",
-    "@types/node": "8.0.45",
-    "@types/request": "^2.0.6",
+    "@types/node": "8.0.47",
+    "@types/request": "^2.0.7",
     "@types/semver": "^5.4.0",
     "chai": "4.1.2",
     "chai-as-promised": "7.1.1",
     "chai-spies": "0.7.1",
     "commitizen": "2.9.6",
     "coveralls": "3.0.0",
-    "cz-conventional-changelog": "2.0.0",
+    "cz-conventional-changelog": "2.1.0",
     "husky": "0.14.3",
     "mocha": "4.0.1",
-    "nyc": "11.2.1",
+    "nyc": "11.3.0",
     "rimraf": "2.6.2",
     "semantic-release": "^8.2.0",
-    "typescript": "2.5.3"
+    "typescript": "2.6.1"
   },
   "config": {
     "commitizen": {

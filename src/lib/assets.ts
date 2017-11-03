@@ -44,18 +44,33 @@ export async function scanWidgetAssets(basepath: string): Promise<Asset[]> {
   try {
     await thumb;
     assets.push(thumb);
-  } catch {
+  } catch(e) {
   }
 
-  return new Promise<Asset[]>(resolve => {
-    const emitter = walk(`${basepath}/assets`);
-    emitter.on('file', filename => {
-      assets.push(checkAsset(filename));
-    });
-    emitter.on('end', () => {
-      resolve(Promise.all(assets));
-    });
-  });
+  const assetsPath: string = `${basepath}/assets`;
+
+  try {
+    await access(assetsPath);
+    const statInfo = await stat(assetsPath);
+    if (statInfo.isDirectory()) {
+      await new Promise<Promise<Asset>[]>(resolve => {
+        const emitter = walk(assetsPath);
+        emitter.on('file', filename => {
+          const parts = filename.substr(assetsPath.length).split('/');
+          if (!parts.find(i => i[0] === '.')) {
+            assets.push(checkAsset(filename));
+          } else {
+            console.log('skipping', filename)
+          }
+        });
+        emitter.on('end', () => {
+          resolve(assets);
+        });
+      });
+    }
+  } catch(e) {
+  }
+  return Promise.all(assets);
 }
 export function hashWidgetAssets(assets: Asset[]): Promise<Asset[]> {
   const hashedAssets: Promise<Asset>[] = [];
