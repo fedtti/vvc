@@ -1,6 +1,6 @@
 {
   "name": "vvc",
-  "version": "0.0.0-development",
+  "version": "1.0.2",
   "description": "Vivocha Command Line Tools",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
@@ -37,6 +37,9 @@
   "files": [
     "dist/**/*.js",
     "dist/**/*.ts",
+    "app/bg.png",
+    "app/index.html",
+    "app/vivocha_widget_tester.js",
     "README.md",
     "LICENSE"
   ],
@@ -47,21 +50,26 @@
   },
   "homepage": "https://github.com/vivocha/vvc#readme",
   "dependencies": {
-    "@vivocha/public-entities": "^5.9.8",
+    "@vivocha/public-entities": "^5.9.11",
+    "body-parser": "^1.18.2",
     "commander": "^2.11.0",
+    "express": "^4.16.2",
     "inquirer": "^3.3.0",
     "jsonpolice": "^7.0.2",
     "lodash": "^4.17.4",
     "mkdirp": "^0.5.1",
+    "openurl": "^1.1.1",
+    "reload": "^2.2.2",
     "request": "^2.83.0",
     "semver": "^5.4.1",
-    "walkdir": "0.0.12"
+    "walkdir": "0.0.12",
+    "watch": "^1.0.2"
   },
   "devDependencies": {
     "@types/commander": "^2.11.0",
     "@types/inquirer": "0.0.35",
     "@types/mkdirp": "^0.5.1",
-    "@types/node": "8.0.47",
+    "@types/node": "8.0.50",
     "@types/request": "^2.0.7",
     "@types/semver": "^5.4.0",
     "chai": "4.1.2",
@@ -74,8 +82,10 @@
     "mocha": "4.0.1",
     "nyc": "11.3.0",
     "rimraf": "2.6.2",
+    "sass.js": "^0.10.6",
     "semantic-release": "^8.2.0",
-    "typescript": "2.6.1"
+    "typescript": "2.6.1",
+    "webpack": "^3.8.1"
   },
   "config": {
     "commitizen": {

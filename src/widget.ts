@@ -1,12 +1,20 @@
 #!/usr/bin/env node
 
 import * as fs from 'fs';
+import * as path from 'path';
+import * as http from 'http';
 import { promisify } from 'util';
 import * as _ from 'lodash';
 import * as program from 'commander';
 import * as _mkdirp from 'mkdirp';
 import * as jsonpolice from 'jsonpolice';
-import { Asset, WidgetManifest, MultiLanguageString } from '@vivocha/public-entities';
+import * as express from 'express';
+import * as bodyParser from 'body-parser';
+import * as reload from 'reload';
+import { open as openurl } from 'openurl';
+import * as watch from 'watch';
+import { Asset, WidgetManifest, WidgetSettings, MultiLanguageString } from '@vivocha/public-entities';
+import { getStringsObject } from '@vivocha/public-entities/dist/wrappers/language';
 import { Config, read as readConfig, meta } from './lib/config';
 import { ws, wsUrl, retriever } from './lib/ws';
 import { fetchWidgetStrings, uploadWidgetStringChanges } from './lib/strings';
@@ -180,7 +188,7 @@ program
   .description('Pull a version of the widget from the Vivocha servers')
   .option('-d, --directory <widget path>', 'Pull the widget into the specified path')
   .option('-v, --ver <widget version>', 'Pull the specified version')
-  .action(async options => {
+  .action(async (widget_id, options) => {
     const startDir = process.cwd();
     let exitCode = 0;
 
@@ -188,15 +196,15 @@ program
       await checkLoginAndVersion();
 
       // get the manifest
-      const manifest = await ws(`widgets/${options.widget_id}${options.ver ? '/' + options.ver : ''}`).catch(() => {
-        throw `Failed to download ${options.ver ? 'the request version of ' : ''}widget ${options.widget_id}`;
+      const manifest = await ws(`widgets/${widget_id}${options.ver ? '/' + options.ver : ''}`).catch(() => {
+        throw `Failed to download ${options.ver ? 'the request version of ' : ''}widget ${widget_id}`;
       });
       delete manifest.acct_id;
       delete manifest.version;
       delete manifest.draft;
 
       // check that the destination dir does not exist
-      const widgetDir = options.directory || `./${options.widget_id}`;
+      const widgetDir = options.directory || `./${widget_id}`;
       await access(widgetDir).then(() => {
         throw 'Destination path already exists';
       }, () => {});
@@ -213,7 +221,7 @@ program
       });
 
       // download and write the strings
-      const strings = await fetchWidgetStrings(options.widget_id).catch(() => {
+      const strings = await fetchWidgetStrings(widget_id).catch(() => {
         throw 'Failed to download the strings';
       });
       await writeFile('./strings.json', JSON.stringify(strings, null, 2), 'utf8').catch(() => {
@@ -230,5 +238,100 @@ program
       process.exit(exitCode);
     }
   });
+
+program
+  .command('server')
+  .description('Start a development server to test the widget on the local machine')
+  .option('-p, --port <port>', 'Server port, default 8085', 8085)
+  .option('-h, --host <host>', 'Server host, default localhost', 'localhost')
+  .option('-n, --no-open', 'Do not attempt to open the test app on a browser')
+  .option('-w, --watch', 'Automatically reload the page if any file change is detected')
+  .action(async options => {
+    const startDir = process.cwd();
+
+    try {
+      await checkLoginAndVersion();
+
+      const app = express();
+      app.set('port', options.port);
+      app.set('host', options.host);
+      app.use(bodyParser.json());
+      app.use(express.static(path.join(__dirname, '../app')));
+      app.use('/main.html', express.static(path.join(startDir, 'main.html')));
+      app.use('/main.scss', express.static(path.join(startDir, 'main.scss')));
+      app.use('/assets', express.static(path.join(startDir, 'assets')));
+      app.get('/widget', async (req, res) => {
+        const manifest: WidgetManifest = JSON.parse(fs.readFileSync(path.join(startDir, 'manifest.json')).toString('utf8'));
+
+        let settings: WidgetSettings;
+        try {
+          settings = JSON.parse(fs.readFileSync(path.join(startDir, 'settings.json')).toString('utf8'))
+        } catch(e) {
+          settings = {
+            templateId: manifest.id,
+            variables: (manifest.variables || []).reduce((o, i) => {
+              if (typeof i.defaultValue !== 'undefined') {
+                o[i.id] = i.defaultValue;
+              }
+              return o;
+            }, {}),
+            requestedLanguage: 'en',
+            defaultLanguage: 'en'
+          };
+          fs.writeFileSync(path.join(startDir, 'settings.json'), JSON.stringify(settings, null, 2));
+        }
+
+        const requestedLanguage = settings.requestedLanguage || 'en';
+        const defaultLanguage = settings.defaultLanguage || requestedLanguage || 'en';
+        delete settings.requestedLanguage;
+        delete settings.defaultLanguage;
+
+        const strings: any = getStringsObject(JSON.parse(fs.readFileSync(path.join(startDir, 'strings.json')).toString('utf8')), requestedLanguage, defaultLanguage);
+
+        res.json({
+          id: '' + +new Date(),
+          manifest,
+          settings,
+          strings,
+          requestedLanguage,
+          defaultLanguage,
+          assetsBaseUrl: '/'
+        });
+      });
+
+      const server = http.createServer(app);
+      const reloader = reload(app);
+      const serverUrl = `http://${options.host}:${options.port}`;
+      console.log(`starting debug server at ${serverUrl}`);
+      server.listen(options.port, options.host);
+
+      if (options.watch) {
+        const filterRegExp: RegExp = new RegExp(`^${startDir}/(assets|main.html$|main.scss$|manifest.json$|strings.json$|settings.json$)`);
+        watch.watchTree(startDir, {
+          ignoreDotFiles: true,
+          filter: f => filterRegExp.test(f)
+        }, (f, curr, prev) => {
+          if (curr && prev) {
+            reloader.reload();
+          }
+        });
+      }
+
+      if (options.open !== false) {
+        openurl(serverUrl);
+      }
+
+      process.on('SIGTERM', () => {
+        process.exit(0);
+      });
+      process.on('SIGINT', () => {
+        process.exit(0);
+      });
+    } catch(e) {
+      console.error(e);
+      process.exit(1);
+    }
+  });
+
 
 program.parse(process.argv);
