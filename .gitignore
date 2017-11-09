@@ -39,4 +39,10 @@ jspm_packages
 #TypeScript typings/definitions
 typings
 
+
 dist
+app/index.d.ts
+app/index.js
+app/index.js.map
+app/sass.worker.js
+app/vivocha_widget_tester.js

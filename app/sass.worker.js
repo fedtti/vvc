@@ -1,1 +1,0 @@
-../node_modules/sass.js/dist/sass.worker.js
