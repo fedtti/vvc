@@ -10,9 +10,9 @@
     "vvc-widget": "./dist/widget.js"
   },
   "scripts": {
-    "clean": "rimraf dist coverage .nyc_output node_modules",
+    "clean": "rimraf dist coverage .nyc_output node_modules app/sass.worker.js app/vivocha_widget_tester.js",
     "prebuild": "rimraf dist",
-    "build": "tsc",
+    "build": "tsc && tsc -p app && cp node_modules/sass.js/dist/sass.worker.js app/ && webpack --config app/webpack.config.js --context app",
     "_precommit": "npm run build && npm run cover && npm run check-coverage",
     "precommit": "npm run build",
     "commit": "git-cz",
