@@ -4,6 +4,15 @@ import { DebuggerWidgetInstance } from '@vivocha/public-entities/dist/wrappers/w
 
 fetch('/widget').then(response => response.json()).then((options: WidgetInstanceCreateOptions) => {
   WidgetInstanceWrapper.create(DebuggerWidgetInstance, options).then((widget: WidgetInstance) => {
+    window['vivocha'] = {
+      getWidget() {
+        return {
+          close() {
+            console.log('closed called');
+          }
+        }
+      }
+    };
     console.log(widget.css);
     console.log(widget.html);
     const style = document.createElement('style');
