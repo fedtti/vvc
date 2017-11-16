@@ -51,7 +51,7 @@
   },
   "homepage": "https://github.com/vivocha/vvc#readme",
   "dependencies": {
-    "@vivocha/public-entities": "^5.9.14",
+    "@vivocha/public-entities": "^5.9.18",
     "body-parser": "^1.18.2",
     "commander": "^2.11.0",
     "express": "^4.16.2",
@@ -70,7 +70,7 @@
     "@types/commander": "^2.11.0",
     "@types/inquirer": "0.0.35",
     "@types/mkdirp": "^0.5.1",
-    "@types/node": "8.0.52",
+    "@types/node": "8.0.53",
     "@types/request": "^2.0.8",
     "@types/semver": "^5.4.0",
     "chai": "4.1.2",
