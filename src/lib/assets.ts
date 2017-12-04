@@ -89,10 +89,10 @@ export function hashWidgetAssets(assets: Asset[]): Promise<Asset[]> {
   });
   return Promise.all(hashedAssets);
 }
-export async function uploadWidgetAssetChanges(widgetId: string, oldAssets: Asset[], newAssets: Asset[]) {
+export async function uploadWidgetAssetChanges(widgetId: string, oldAssets: Asset[], newAssets: Asset[], global: boolean) {
   async function upload(asset: Asset): Promise<Asset> {
     try {
-      let data = await ws(`widgets/${widgetId}/upload`, {
+      let data = await ws(`widgets/${widgetId}/upload${global ? '?global=true' : ''}`, {
         method: 'POST',
         qs: {
           id: asset.path

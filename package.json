@@ -51,11 +51,12 @@
   },
   "homepage": "https://github.com/vivocha/vvc#readme",
   "dependencies": {
-    "@vivocha/public-entities": "^5.9.23",
+    "@vivocha/public-entities": "^5.9.30",
+    "arrest": "^7.0.2",
     "body-parser": "^1.18.2",
-    "commander": "^2.11.0",
+    "commander": "^2.12.2",
     "express": "^4.16.2",
-    "inquirer": "^4.0.0",
+    "inquirer": "^4.0.1",
     "jsonpolice": "^7.0.3",
     "lodash": "^4.17.4",
     "mkdirp": "^0.5.1",
@@ -67,10 +68,12 @@
     "watch": "^1.0.2"
   },
   "devDependencies": {
-    "@types/commander": "^2.11.0",
+    "@types/commander": "^2.12.2",
+    "@types/debug": "0.0.30",
+    "@types/express": "^4.0.39",
     "@types/inquirer": "0.0.35",
-    "@types/mkdirp": "^0.5.1",
-    "@types/node": "8.0.53",
+    "@types/mkdirp": "^0.5.2",
+    "@types/node": "8.0.54",
     "@types/request": "^2.0.8",
     "@types/semver": "^5.4.0",
     "chai": "4.1.2",
@@ -85,8 +88,8 @@
     "rimraf": "2.6.2",
     "sass.js": "^0.10.7",
     "semantic-release": "^8.2.0",
-    "typescript": "2.6.1",
-    "webpack": "^3.8.1"
+    "typescript": "2.6.2",
+    "webpack": "^3.9.1"
   },
   "config": {
     "commitizen": {
