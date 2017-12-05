@@ -263,7 +263,7 @@ const mkdirp = promisify(_mkdirp);
           try {
             const manifest: WidgetManifest = JSON.parse(fs.readFileSync(path.join(startDir, 'manifest.json')).toString('utf8'));
 
-            if (manifest.type !== 'engagment') {
+            if (manifest.type !== 'engagement') {
               throw 'Server mode only supports engagement widgets';
             }
             const app = express();
@@ -275,7 +275,6 @@ const mkdirp = promisify(_mkdirp);
             app.use('/main.scss', express.static(path.join(startDir, 'main.scss')));
             app.use('/assets', express.static(path.join(startDir, 'assets')));
             app.get('/widget', async (req, res) => {
-
               let settings: WidgetSettings;
               try {
                 settings = JSON.parse(fs.readFileSync(path.join(startDir, 'settings.json')).toString('utf8'))

@@ -1,7 +1,7 @@
-import { WidgetInstance } from '@vivocha/public-entities';
-import { EngagementInstanceWrapper, EngagementInstanceCreateOptions } from '@vivocha/public-entities/dist/wrappers/widget';
+import { EngagementInstance } from '@vivocha/public-entities';
+import { createEngagementInstance, EngagementInstanceOptions } from '@vivocha/public-entities/dist/wrappers/widget';
 import { innerScript } from '@vivocha/public-entities/dist/wrappers/widget_inner';
-import { DebuggerEngagementInstance } from '@vivocha/public-entities/dist/wrappers/widget_debugger';
+import { DebuggerInstanceRenderer } from '@vivocha/public-entities/dist/wrappers/widget_debugger';
 
 window['vivocha'] = {
   getWidget(id: string) {
@@ -16,8 +16,8 @@ window['vivocha'] = {
   }
 };
 
-fetch('/widget').then(response => response.json()).then((options: EngagementInstanceCreateOptions) => {
-  EngagementInstanceWrapper.create(DebuggerEngagementInstance, options).then((widget: WidgetInstance) => {
+fetch('/widget').then(response => response.json()).then((options: EngagementInstanceOptions) => {
+  createEngagementInstance(new DebuggerInstanceRenderer(options)).then((widget: EngagementInstance) => {
     console.log(widget.css);
     console.log(widget.html);
     const style = document.createElement('style');
