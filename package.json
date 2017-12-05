@@ -1,6 +1,6 @@
 {
   "name": "vvc",
-  "version": "5.9.6",
+  "version": "5.9.7",
   "description": "Vivocha Command Line Tools",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
