@@ -2,9 +2,9 @@ import * as fs from 'fs';
 import * as path  from 'path';
 import * as crypto from 'crypto';
 import { promisify } from 'util';
-import * as walk from 'walkdir';
 import * as _mkdirp from 'mkdirp';
 import { Asset } from '@vivocha/public-entities';
+import walkdir from './walkdir';
 import { Config, read as readConfig } from './config';
 import { ws, download } from './ws';
 
@@ -44,32 +44,13 @@ export async function scanWidgetAssets(basepath: string): Promise<Asset[]> {
   try {
     await thumb;
     assets.push(thumb);
-  } catch(e) {
-  }
+  } catch(e) { }
 
   const assetsPath: string = `${basepath}/assets`;
 
   try {
-    await access(assetsPath);
-    const statInfo = await stat(assetsPath);
-    if (statInfo.isDirectory()) {
-      await new Promise<Promise<Asset>[]>(resolve => {
-        const emitter = walk(assetsPath);
-        emitter.on('file', filename => {
-          const parts = filename.substr(assetsPath.length).split('/');
-          if (!parts.find(i => i[0] === '.')) {
-            assets.push(checkAsset(filename));
-          } else {
-            console.log('skipping', filename)
-          }
-        });
-        emitter.on('end', () => {
-          resolve(assets);
-        });
-      });
-    }
-  } catch(e) {
-  }
+    assets.push(... (await walkdir(assetsPath)).map(f => f.replace(/^\.\//, '')).map(f => checkAsset(f)));
+  } catch(e) { }
   return Promise.all(assets);
 }
 export function hashWidgetAssets(assets: Asset[]): Promise<Asset[]> {

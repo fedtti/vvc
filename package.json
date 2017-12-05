@@ -64,7 +64,6 @@
     "reload": "^2.2.2",
     "request": "^2.83.0",
     "semver": "^5.4.1",
-    "walkdir": "0.0.12",
     "watch": "^1.0.2"
   },
   "devDependencies": {

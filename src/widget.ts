@@ -83,6 +83,7 @@ const mkdirp = promisify(_mkdirp);
                 delete data.version;
                 delete data.draft;
               }
+              return data;
             }, (err) => {
               return null;
             });
@@ -181,7 +182,7 @@ const mkdirp = promisify(_mkdirp);
                 method: 'PUT',
                 body: manifest
               }).catch(err => {
-                throw `failed to upload manifest.json, ${err.message}`;
+                throw `failed to upload manifest.json, ${err.message || err.name}`;
               });
               console.log(`saved version ${newManifest.version} ${newManifest.draft ? 'draft' : ''}`);
             }
