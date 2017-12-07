@@ -1,4 +1,5 @@
 import * as _ from 'lodash';
+import { Eredita } from 'eredita';
 import { MultiLanguageString } from '@vivocha/public-entities/dist/language';
 import { ws } from './ws';
 
@@ -12,6 +13,27 @@ function reducer(o: StringMap, i: MultiLanguageString): StringMap {
     values: i.values
   };
   return o;
+}
+function getPaths(strings: MultiLanguageString[]): string {
+  let data: any = strings.map(s => s.id).reduce((o: any, i: string) => {
+    Eredita.dot(o, i, true);
+    return o;
+  }, {});
+  function _getPaths(data: any, curr_path: string, curr_depth: number): string {
+    const keys = Object.keys(data);
+    if (keys.length > 1) {
+      if (curr_depth > 1 || keys.length > 2) {
+        return curr_path;
+      } else {
+        return keys.map(k => _getPaths(data[k], `${curr_path}${curr_path ? '.' : ''}${k}`, curr_depth + 1)).join(',')
+      }
+    } else if (typeof data[keys[0]] === 'boolean') {
+      return curr_path;
+    } else {
+      return _getPaths(data[keys[0]], `${curr_path}${curr_path ? '.' : ''}${keys[0]}`, curr_depth + 1);
+    }
+  }
+  return _getPaths(data, '', 0);
 }
 
 export function fetchStrings(path: string, global: boolean): Promise<MultiLanguageString[]> {
@@ -47,8 +69,9 @@ export async function uploadWidgetStringChanges(widgetId: string, newStrings: Mu
   }
   return stringIds;
 }
-export async function uploadStringChanges(path: string, newStrings: MultiLanguageString[], global: boolean): Promise<string[]> {
-  const o: StringMap = (await fetchStrings(path, global)).reduce(reducer, {});
+export async function uploadStringChanges(newStrings: MultiLanguageString[], global: boolean): Promise<string[]> {
+  let paths: string = getPaths(newStrings);
+  const o: StringMap = (await fetchStrings(paths, global)).reduce(reducer, {});
   const n: StringMap = newStrings.reduce(reducer, {});
   const stringIds = Object.keys(n);
   for (let k of stringIds) {

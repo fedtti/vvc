@@ -54,7 +54,7 @@ const access = promisify(fs.access);
               throw `invalid format of strings.json, ${err.message} ${err.path || ''}`;
             });
 
-            await uploadStringChanges('', strings, options.global);
+            await uploadStringChanges(strings, options.global);
           } catch(e) {
             console.error(e);
             exitCode = 1;

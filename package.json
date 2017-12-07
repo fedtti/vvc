@@ -56,6 +56,7 @@
     "arrest": "^7.0.2",
     "body-parser": "^1.18.2",
     "commander": "^2.12.2",
+    "eredita": "^1.1.4",
     "express": "^4.16.2",
     "inquirer": "^4.0.1",
     "jsonpolice": "^7.0.3",
