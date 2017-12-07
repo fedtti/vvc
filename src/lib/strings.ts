@@ -1,6 +1,18 @@
 import * as _ from 'lodash';
-import { MultiLanguageString } from '@vivocha/public-entities';
+import { MultiLanguageString } from '@vivocha/public-entities/dist/language';
 import { ws } from './ws';
+
+interface StringMap {
+  [id:string]: MultiLanguageString
+}
+function reducer(o: StringMap, i: MultiLanguageString): StringMap {
+  o[i.id] = {
+    id: i.id,
+    description: i.description,
+    values: i.values
+  };
+  return o;
+}
 
 export function fetchStrings(path: string, global: boolean): Promise<MultiLanguageString[]> {
   return ws(`strings${global ? '?global=true' : ''}`, { qs: { path } });
@@ -19,27 +31,31 @@ export async function fetchWidgetStrings(widgetId: string, global: boolean): Pro
     return i;
   });
 }
-export async function uploadWidgetString(widgetId: string, str: MultiLanguageString, global: boolean): Promise<MultiLanguageString> {
-  let wstr = Object.assign({}, str, { id: `WIDGET.${widgetId}.${str.id}`});
+export async function uploadWidgetString(widgetId: string, str: MultiLanguageString, global: boolean): Promise<string> {
+  let wstr: MultiLanguageString = Object.assign({}, str, { id: `WIDGET.${widgetId}.${str.id}`});
   return uploadString(wstr, global).then(() => str.id);
 }
 export async function uploadWidgetStringChanges(widgetId: string, newStrings: MultiLanguageString[], global: boolean): Promise<string[]> {
-  function reduce(o, i) {
-    o[i.id] = { id: i.id, values: i.values };
-    return o;
-  }
-  interface StringMap { [id:string]: MultiLanguageString }
-  const o: StringMap = (await fetchWidgetStrings(widgetId, global)).reduce(reduce, {});
-  const n: StringMap = newStrings.reduce(reduce, {});
-
+  const o: StringMap = (await fetchWidgetStrings(widgetId, global)).reduce(reducer, {});
+  const n: StringMap = newStrings.reduce(reducer, {});
   const stringIds = Object.keys(n);
-
   for (let k of stringIds) {
     if (!o[k] || !_.isEqual(o[k], n[k])) {
       console.log(`string ${k} changed, uploading`);
       await uploadWidgetString(widgetId, n[k], global);
     }
   }
-
+  return stringIds;
+}
+export async function uploadStringChanges(path: string, newStrings: MultiLanguageString[], global: boolean): Promise<string[]> {
+  const o: StringMap = (await fetchStrings(path, global)).reduce(reducer, {});
+  const n: StringMap = newStrings.reduce(reducer, {});
+  const stringIds = Object.keys(n);
+  for (let k of stringIds) {
+    if (!o[k] || !_.isEqual(o[k], n[k])) {
+      console.log(`string ${k} changed, uploading`);
+      await uploadString(n[k], global);
+    }
+  }
   return stringIds;
 }

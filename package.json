@@ -7,7 +7,8 @@
   "bin": {
     "vvc": "./dist/index.js",
     "vvc-login": "./dist/login.js",
-    "vvc-widget": "./dist/widget.js"
+    "vvc-widget": "./dist/widget.js",
+    "vvc-strings": "./dist/strings.js"
   },
   "scripts": {
     "clean": "rimraf dist coverage .nyc_output node_modules app/sass.worker.js app/vivocha_widget_tester.js",
@@ -51,7 +52,7 @@
   },
   "homepage": "https://github.com/vivocha/vvc#readme",
   "dependencies": {
-    "@vivocha/public-entities": "^5.9.31",
+    "@vivocha/public-entities": "^5.9.32",
     "arrest": "^7.0.2",
     "body-parser": "^1.18.2",
     "commander": "^2.12.2",
@@ -72,7 +73,7 @@
     "@types/express": "^4.0.39",
     "@types/inquirer": "0.0.35",
     "@types/mkdirp": "^0.5.2",
-    "@types/node": "8.0.54",
+    "@types/node": "8.0.56",
     "@types/request": "^2.0.8",
     "@types/semver": "^5.4.0",
     "chai": "4.1.2",

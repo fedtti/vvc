@@ -8,4 +8,5 @@ program
   .description(meta.description)
   .command('login', 'Login to you Vivocha account')
   .command('widget', 'Manage engagement widgets')
+  .command('strings', 'Manage translation strings')
   .parse(process.argv);
