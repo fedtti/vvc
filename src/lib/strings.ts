@@ -9,9 +9,11 @@ interface StringMap {
 function reducer(o: StringMap, i: MultiLanguageString): StringMap {
   o[i.id] = {
     id: i.id,
-    description: i.description,
     values: i.values
   };
+  if (i.description) {
+    o[i.id].description = i.description;
+  }
   return o;
 }
 function getPaths(strings: MultiLanguageString[]): string {
