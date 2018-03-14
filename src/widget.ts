@@ -88,6 +88,7 @@ const mkdirp = promisify(_mkdirp);
             process.exit(1);
           }
         }),
+      /*
       init: program
         .command('init')
         .description('Create a new widget')
@@ -99,6 +100,7 @@ const mkdirp = promisify(_mkdirp);
             process.exit(1);
           }
         }),
+      */
       push: program
         .command('push')
         .description('Push a new version of the widget to the Vivocha servers')
@@ -292,7 +294,10 @@ const mkdirp = promisify(_mkdirp);
 
             // write the manifest
             delete manifest.assets;
-            delete manifest.strings;
+            delete manifest.stringIds;
+            delete manifest.htmlId;
+            delete manifest.scssId;
+            delete manifest.thumbnailId;
             await writeFile('./manifest.json', JSON.stringify(manifest, null, 2), 'utf8').catch(() => {
               throw 'Failed to write the manifest';
             });
@@ -407,6 +412,7 @@ const mkdirp = promisify(_mkdirp);
     if (config.info.scopes) {
       const scopes: Scopes = new Scopes(config.info.scopes);
       if (scopes.match('Widget.global')) {
+        commands.list.option('-g, --global', 'List only global widgets');
         commands.push.option('-g, --global', 'Push as global widget');
         commands.pull.option('-g, --global', 'Pull a global version of the requested widget');
       }
