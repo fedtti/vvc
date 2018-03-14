@@ -14,11 +14,12 @@ import { Scopes } from 'arrest';
 import * as reload from 'reload';
 import { open as openurl } from 'openurl';
 import * as watch from 'watch';
+import * as columnify from 'columnify';
 import { Asset, WidgetManifest, WidgetSettings, MultiLanguageString } from '@vivocha/public-entities';
 import { getStringsObject } from '@vivocha/public-entities/dist/wrappers/language';
 import { Config, read as readConfig, meta } from './lib/config';
 import { ws, wsUrl, retriever } from './lib/ws';
-import { fetchWidgetStrings, uploadWidgetStringChanges } from './lib/strings';
+import { fetchStrings, fetchWidgetStrings, uploadWidgetStringChanges } from './lib/strings';
 import { downloadAssets, scanWidgetAssets, hashWidgetAssets, uploadWidgetAssetChanges } from './lib/assets';
 import { checkLoginAndVersion } from './lib/startup';
 
@@ -35,6 +36,58 @@ const mkdirp = promisify(_mkdirp);
       .version(meta.version);
 
     const commands = {
+      list: program
+        .command('list')
+        .description('Display a list of available widgets')
+        .option('-e, --engagement', 'Only list engagement widgets')
+        .option('-i, --interaction', 'Only list interaction widgets')
+        .action(async options => {
+          try {
+            const qs: any = {
+              fields: ['id', 'type', 'version', 'draft', 'acct_id' ].join(','),
+              sort: 'id'
+            };
+            if (options.global) {
+              qs.global = true;
+            }
+            if (options.engagement) {
+              qs.q = 'eq(type,engagement)';
+            }
+            if (options.interaction) {
+              qs.q = 'eq(type,interaction)';
+            }
+            const data = (await ws('widgets', { qs })).reduce((o, i) => {
+              o[i.id] = i;
+              return o;
+            }, {});
+            (await fetchStrings(Object.keys(data).map(w => `WIDGET.${w}.NAME`).join(','), options.global)).reduce((o, i) => {
+              const id = i.id.replace(/^WIDGET\.([^\.]*)\.NAME$/, '$1');
+              if (o[id] && i.values && i.values.en && i.values.en.value) {
+                o[id].name = i.values.en.value;
+              }
+              return o;
+            }, data);
+
+            const columns = columnify(Object.entries(data).map(i => i[1]), {
+              columns: [
+                'id', 'type', 'version', 'draft', 'acct_id', 'name',
+              ],
+              config: {
+                draft: {
+                  dataTransform: data => data ? '✓' : ''
+                },
+                acct_id: {
+                  dataTransform: data => data ? '' : '✓',
+                  headingTransform: () => 'global'.toUpperCase()
+                },
+              }
+            });
+            console.log(columns);
+          } catch(e) {
+            console.error(e);
+            process.exit(1);
+          }
+        }),
       init: program
         .command('init')
         .description('Create a new widget')
@@ -227,11 +280,6 @@ const mkdirp = promisify(_mkdirp);
             });
             process.chdir(widgetDir);
 
-            // write the manifest
-            await writeFile('./manifest.json', JSON.stringify(manifest, null, 2), 'utf8').catch(() => {
-              throw 'Failed to write the manifest';
-            });
-
             // download and write the strings
             const strings = await fetchWidgetStrings(widget_id, options.global).catch(() => {
               throw 'Failed to download the strings';
@@ -241,6 +289,13 @@ const mkdirp = promisify(_mkdirp);
             });
 
             await downloadAssets(manifest.assets);
+
+            // write the manifest
+            delete manifest.assets;
+            delete manifest.strings;
+            await writeFile('./manifest.json', JSON.stringify(manifest, null, 2), 'utf8').catch(() => {
+              throw 'Failed to write the manifest';
+            });
 
           } catch(e) {
             console.error(e);
@@ -343,7 +398,10 @@ const mkdirp = promisify(_mkdirp);
             console.error(e);
             process.exit(1);
           }
-        })
+        }),
+      '*': program
+        .command('*', null, { noHelp: true })
+        .action(() => { program.help(); })
     };
 
     if (config.info.scopes) {
@@ -355,6 +413,10 @@ const mkdirp = promisify(_mkdirp);
     }
 
     program.parse(process.argv);
+
+    if (program.args.length === 0) {
+      program.help();
+    }
   } catch(err) {
     console.error(err);
     process.exit(1);

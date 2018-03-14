@@ -82,6 +82,9 @@ const access = promisify(fs.access);
             process.exit(exitCode);
           }
         }),
+      '*': program
+        .command('*', null, { noHelp: true })
+        .action(() => { program.help(); })
     };
 
     if (config.info.scopes) {
@@ -93,6 +96,10 @@ const access = promisify(fs.access);
     }
 
     program.parse(process.argv);
+
+    if (program.args.length === 0) {
+      program.help();
+    }
   } catch(err) {
     console.error(err);
     process.exit(1);

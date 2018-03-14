@@ -55,6 +55,7 @@
     "@vivocha/public-entities": "^5.9.33",
     "arrest": "^7.0.2",
     "body-parser": "^1.18.2",
+    "columnify": "^1.5.4",
     "commander": "^2.12.2",
     "eredita": "^1.1.4",
     "express": "^4.16.2",
