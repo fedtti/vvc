@@ -5,10 +5,10 @@
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
   "bin": {
-    "vvc": "./dist/index.js",
-    "vvc-login": "./dist/login.js",
-    "vvc-widget": "./dist/widget.js",
-    "vvc-strings": "./dist/strings.js"
+    "vvc": "./dist/vvc.js",
+    "vvc-login": "./dist/vvc-login.js",
+    "vvc-widget": "./dist/vvc-widget.js",
+    "vvc-strings": "./dist/vvc-strings.js"
   },
   "scripts": {
     "clean": "rimraf dist coverage .nyc_output node_modules app/sass.worker.js app/vivocha_widget_tester.js",
