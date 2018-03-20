@@ -419,10 +419,6 @@ const mkdirp = promisify(_mkdirp);
     }
 
     program.parse(process.argv);
-
-    if (program.args.length === 0) {
-      program.help();
-    }
   } catch(err) {
     console.error(err);
     process.exit(1);
