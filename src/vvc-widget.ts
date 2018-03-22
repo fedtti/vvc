@@ -181,11 +181,18 @@ const mkdirp = promisify(_mkdirp);
 
             // update assets and put data in manifest
             let assets: Asset[] = await scanWidgetAssets('.').catch(err => {
-              throw `failed to scan aseets, ${err.message}`;
+              throw `failed to scan assets, ${err.message}`;
             });
             assets = await hashWidgetAssets(assets).catch(err => {
               throw `failed to hash assets, ${err.message}`;
             });
+            if (manifest.assets && manifest.assets.length) {
+              for (let a of manifest.assets) {
+                if (a.id && ((options.global && a.id.indexOf('_/') !== 0) || (!options.global && a.id.indexOf('_/') === 0))) {
+                  delete a.id;
+                }
+              }
+            }
             await uploadWidgetAssetChanges(manifest.id, Array.isArray(manifest.assets) ? manifest.assets : [], assets, options.global).catch(err => {
               throw `failed to upload assets, ${err.message}`;
             });
@@ -293,11 +300,6 @@ const mkdirp = promisify(_mkdirp);
             await downloadAssets(manifest.assets);
 
             // write the manifest
-            delete manifest.assets;
-            delete manifest.stringIds;
-            delete manifest.htmlId;
-            delete manifest.scssId;
-            delete manifest.thumbnailId;
             await writeFile('./manifest.json', JSON.stringify(manifest, null, 2), 'utf8').catch(() => {
               throw 'Failed to write the manifest';
             });
