@@ -312,6 +312,38 @@ const mkdirp = promisify(_mkdirp);
             process.exit(exitCode);
           }
         }),
+      activate: program
+        .command('activate')
+        .description('Publish a draft as a new production version')
+        .action(async options => {
+          let exitCode = 0;
+
+          try {
+            // check if manifest.json exists
+            await access('./manifest.json', fs.constants.R_OK | fs.constants.W_OK).catch(() => {
+              throw "manifest.json not found";
+            });
+
+            // load manifest.json
+            let manifest: WidgetManifest = await new Promise<WidgetManifest>(resolve => {
+              const raw = fs.readFileSync('./manifest.json').toString('utf8');
+              resolve(JSON.parse(raw) as WidgetManifest);
+            }).catch(() => {
+              throw "Failed to parse manifest.json";
+            });
+
+            const newManifest = await ws(`widgets/${manifest.id}/activate${options.global ? '?global=true' : ''}`, {
+              method: 'POST'
+            }).catch(err => {
+              throw `failed to activate the widget, ${err.message || err.name}`;
+            });
+          } catch(e) {
+            console.error(e);
+            exitCode = 1;
+          } finally {
+            process.exit(exitCode);
+          }
+        }),
       server: program
         .command('server')
         .description('Start a development server to test the widget on the local machine')
@@ -417,6 +449,7 @@ const mkdirp = promisify(_mkdirp);
         commands.list.option('-g, --global', 'List only global widgets');
         commands.push.option('-g, --global', 'Push as global widget');
         commands.pull.option('-g, --global', 'Pull a global version of the requested widget');
+        commands.activate.option('-g, --global', 'Activate a global widget');
       }
     }
 
