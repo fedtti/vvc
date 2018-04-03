@@ -52,7 +52,7 @@
   },
   "homepage": "https://github.com/vivocha/vvc#readme",
   "dependencies": {
-    "@vivocha/public-entities": "^5.9.33",
+    "@vivocha/public-entities": "^6.0.0",
     "arrest": "^7.0.2",
     "body-parser": "^1.18.2",
     "columnify": "^1.5.4",
