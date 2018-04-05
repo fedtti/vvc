@@ -24,6 +24,7 @@ fetch('/widget').then(response => response.json()).then((options: EngagementInst
     style.innerText = widget.css;
     document.head.appendChild(style);
     const div = document.createElement('div');
+    div.classList.add(`vvc-wrap-${options.id}`);
     div.innerHTML = widget.html;
     innerScript(div);
     document.body.appendChild(div);
