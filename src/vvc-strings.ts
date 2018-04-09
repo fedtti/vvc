@@ -71,7 +71,7 @@ const access = promisify(fs.access);
       pull: program
         .command('pull')
         .description('Pull strings from the Vivocha servers to stdout')
-        .option('-p, --prefix <strings prefix>', 'Pull noly the strings starting with prefix', '')
+        .option('-p, --prefix <strings prefix>', 'Pull only the strings starting with prefix', '')
         .action(async options => {
           let exitCode = 0;
 
