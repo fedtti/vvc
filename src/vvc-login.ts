@@ -8,6 +8,7 @@ import { Config, read as readConfig, write as writeConfig, meta } from './lib/co
 
 program
   .version(meta.version)
+  .option('-d, --domain [domain]', 'Login on custom domain')
   .parse(process.argv);
 
 (async () => {
@@ -32,7 +33,7 @@ program
     ]);
     const server: string = await new Promise<string>((resolve, reject) => {
       request({
-        url: `https://www.vivocha.com/a/${data.acct_id}/api/v2/swagger.json`,
+        url: `https://www.${program.domain || 'vivocha.com'}/a/${data.acct_id}/api/v2/swagger.json`,
         method: 'HEAD',
         followRedirect: false
       }, function(err, res, data) {
