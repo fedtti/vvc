@@ -11,7 +11,7 @@ export interface Config {
 }
 
 export const meta =  require(__dirname + '/../../package.json');
-const _config_file_dir = `${process.env.HOME}/.vvc`;
+const _config_file_dir = `${process.env.HOME || process.env.HomePath}/.vvc`;
 const _config_file_path = `${_config_file_dir}/config.json`;
 let config: Promise<Config>;
 
