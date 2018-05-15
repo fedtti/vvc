@@ -360,6 +360,51 @@ const mkdirp = promisify(_mkdirp);
             if (manifest.type !== 'engagement') {
               throw 'Server mode only supports engagement widgets';
             }
+
+            // update assets and put data in manifest
+            let assets: Asset[] = await scanWidgetAssets('.').catch(err => {
+              throw `failed to scan assets, ${err.message}`;
+            });
+            assets = await hashWidgetAssets(assets).catch(err => {
+              throw `failed to hash assets, ${err.message}`;
+            });
+            if (manifest.assets && manifest.assets.length) {
+              for (let a of manifest.assets) {
+                if (a.id && ((options.global && a.id.indexOf('_/') !== 0) || (!options.global && a.id.indexOf('_/') === 0))) {
+                  delete a.id;
+                }
+              }
+            }
+
+            manifest.assets = assets;
+
+            for (let a of manifest.assets) {
+              if (!a.id) {
+                a.id = a.hash
+              }
+            }
+
+            let a = manifest.assets.find(i => i.path === 'main.html');
+            if (!a) {
+              throw 'no main.html in the assets';
+            } else {
+              manifest.htmlId = a.id;
+            }
+
+            a = manifest.assets.find(i => i.path === 'main.scss');
+            if (!a) {
+              throw 'no main.scss in the assets';
+            } else {
+              manifest.scssId = a.id;
+            }
+
+            a = manifest.assets.find(i => i.path === 'thumbnail.png');
+            if (a) {
+              manifest.thumbnailId = a.id;
+            } else {
+              delete manifest.thumbnailId;
+            }
+
             const app = express();
             app.set('port', options.port);
             app.set('host', options.host);
