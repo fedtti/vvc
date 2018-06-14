@@ -1,15 +1,15 @@
 #!/usr/bin/env node
 
-import * as fs from 'fs';
-import { promisify } from 'util';
-import * as program from 'commander';
-import * as jsonpolice from 'jsonpolice';
+import { MultiLanguageString } from '@vivocha/public-entities';
 import { Scopes } from 'arrest';
-import { Asset, WidgetManifest, WidgetSettings, MultiLanguageString } from '@vivocha/public-entities';
-import { Config, read as readConfig, meta } from './lib/config';
-import { wsUrl, retriever } from './lib/ws';
-import { fetchStrings, uploadStringChanges } from './lib/strings';
+import * as program from 'commander';
+import * as fs from 'fs';
+import * as jsonpolice from 'jsonpolice';
+import { promisify } from 'util';
+import { Config, meta, read as readConfig } from './lib/config';
 import { checkLoginAndVersion } from './lib/startup';
+import { fetchStrings, uploadStringChanges } from './lib/strings';
+import { retriever, wsUrl } from './lib/ws';
 
 const access = promisify(fs.access);
 
@@ -19,7 +19,8 @@ const access = promisify(fs.access);
     const config: Config = await readConfig();
 
     program
-      .version(meta.version);
+      .version(meta.version)
+      .option('-v, --verbose', 'Verbose output');
 
     const commands = {
       push: program
@@ -103,8 +104,11 @@ const access = promisify(fs.access);
 
     program.parse(process.argv);
   } catch(err) {
-    console.error(err);
+    if (program.verbose) {
+      console.error(err);
+    } else {
+      console.error('Failed');
+    }
     process.exit(1);
   }
-
 })();
