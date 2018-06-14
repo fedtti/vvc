@@ -10,10 +10,25 @@ export interface Config {
   info: any;
 }
 
+function homedir(): string {
+	const user = process.env.LOGNAME || process.env.USER || process.env.LNAME || process.env.USERNAME;
+  switch(process.platform) {
+    case 'win32':
+		  return process.env.USERPROFILE || process.env.HOMEDRIVE + process.env.HOMEPATH || process.env.HOME || null;
+    case 'darwin':
+		  return process.env.HOME || (user ? '/Users/' + user : null);
+    case 'linux':
+		  return process.env.HOME || (process.getuid() === 0 ? '/root' : (user ? '/home/' + user : null));
+    default:
+      return process.env.HOME || null;
+  }
+}
+
 export const meta =  require(__dirname + '/../../package.json');
-const _config_file_dir = `${process.env.HOME || process.env.HomePath}/.vvc`;
+const _config_file_dir = `${homedir()}/.vvc`;
 const _config_file_path = `${_config_file_dir}/config.json`;
 let config: Promise<Config>;
+
 
 async function innerRead(): Promise<Config> {
   const raw = await promisify(fs.readFile)(_config_file_path, 'utf8');
