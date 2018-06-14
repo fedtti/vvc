@@ -46,3 +46,7 @@ export async function write(newConfig:Config): Promise<Config> {
   await promisify(fs.writeFile)(_config_file_path, JSON.stringify(_.omit(newConfig, [ 'info']), null , 2));
   return config = Promise.resolve(newConfig);
 }
+
+export function unlink(): Promise<any> {
+  return promisify(fs.unlink)(_config_file_path);
+}
