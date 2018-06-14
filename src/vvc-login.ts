@@ -1,17 +1,27 @@
 #!/usr/bin/env node
 
-import { URL } from 'url';
 import * as program from 'commander';
 import * as inquirer from 'inquirer';
 import * as request from 'request';
-import { Config, read as readConfig, write as writeConfig, meta } from './lib/config';
+import { URL } from 'url';
+import { Config, meta, read as readConfig, unlink as unlinkConfig, write as writeConfig } from './lib/config';
+import { checkLoginAndVersion } from './lib/startup';
+import { ws } from './lib/ws';
 
 program
   .version(meta.version)
-  .option('-d, --domain [domain]', 'Login on custom domain')
+  .option('-s, --server [FQDN]', 'Login on custom Vivocha world/server')
+  .option('-v, --verbose', 'Verbose output')
   .parse(process.argv);
 
 (async () => {
+  try {
+    await checkLoginAndVersion();
+    const config: Config = await readConfig();
+    await ws(`clients/${config.user_id}`, { method: 'DELETE' });
+    await unlinkConfig();
+  } catch(e) {}
+
   try {
     const data = await inquirer.prompt([
       {
@@ -31,9 +41,9 @@ program
         validate: v => !!v
       }
     ]);
-    const server: string = await new Promise<string>((resolve, reject) => {
+    const server: string = program.server || await new Promise<string>((resolve, reject) => {
       request({
-        url: `https://www.${program.domain || 'vivocha.com'}/a/${data.acct_id}/api/v2/swagger.json`,
+        url: `https://www.vivocha.com/a/${data.acct_id}/api/v2/swagger.json`,
         method: 'HEAD',
         followRedirect: false
       }, function(err, res, data) {
@@ -53,7 +63,7 @@ program
         method: 'POST',
         json: true,
         body: {
-          scope: [ 'Widget.*', 'Asset.*', 'String.*', 'Reflect.cli' ],
+          scope: [ 'Widget.*', 'Asset.*', 'String.*', 'Reflect.cli', 'Client.remove' ],
           user_id: data.user_id
         },
         auth: {
@@ -81,7 +91,10 @@ program
     console.log('Logged in');
     process.exit(0);
   } catch(e) {
-    console.error(e);
+    if (program.verbose) {
+      console.error(e);
+    }
+    console.error('Login failed');
     process.exit(1);
   }
 })();
