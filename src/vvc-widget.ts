@@ -1,27 +1,26 @@
 #!/usr/bin/env node
 
-import * as fs from 'fs';
-import * as path from 'path';
-import * as http from 'http';
-import { promisify } from 'util';
-import * as _ from 'lodash';
-import * as program from 'commander';
-import * as _mkdirp from 'mkdirp';
-import * as jsonpolice from 'jsonpolice';
-import * as express from 'express';
-import * as bodyParser from 'body-parser';
-import { Scopes } from 'arrest';
-import * as reload from 'reload';
-import { open as openurl } from 'openurl';
-import * as watch from 'watch';
-import * as columnify from 'columnify';
-import { Asset, WidgetManifest, WidgetSettings, MultiLanguageString } from '@vivocha/public-entities';
+import { Asset, MultiLanguageString, WidgetManifest } from '@vivocha/public-entities';
 import { getStringsObject } from '@vivocha/public-entities/dist/wrappers/language';
-import { Config, read as readConfig, meta } from './lib/config';
-import { ws, wsUrl, retriever } from './lib/ws';
-import { fetchStrings, fetchWidgetStrings, uploadWidgetStringChanges } from './lib/strings';
-import { downloadAssets, scanWidgetAssets, hashWidgetAssets, uploadWidgetAssetChanges } from './lib/assets';
+import { Scopes } from 'arrest';
+import * as bodyParser from 'body-parser';
+import * as columnify from 'columnify';
+import * as program from 'commander';
+import * as express from 'express';
+import * as fs from 'fs';
+import * as http from 'http';
+import * as jsonpolice from 'jsonpolice';
+import * as _ from 'lodash';
+import * as _mkdirp from 'mkdirp';
+import { open as openurl } from 'openurl';
+import * as path from 'path';
+import * as reload from 'reload';
+import { promisify } from 'util';
+import { downloadAssets, hashWidgetAssets, scanWidgetAssets, uploadWidgetAssetChanges } from './lib/assets';
+import { Config, meta, read as readConfig } from './lib/config';
 import { checkLoginAndVersion } from './lib/startup';
+import { fetchStrings, fetchWidgetStrings, uploadWidgetStringChanges } from './lib/strings';
+import { retriever, ws, wsUrl } from './lib/ws';
 
 const access = promisify(fs.access);
 const writeFile = promisify(fs.writeFile);
@@ -37,52 +36,85 @@ const mkdirp = promisify(_mkdirp);
 
     const commands = {
       list: program
-        .command('list')
-        .description('Display a list of available widgets')
+        .command('list [widget_id]')
+        .description('Display a list of available widgets. If an id is specified, the command lists all versions of the widget')
         .option('-e, --engagement', 'Only list engagement widgets')
         .option('-i, --interaction', 'Only list interaction widgets')
-        .action(async options => {
+        .option('-v, --verbose', 'Verbose output')
+        .action(async (widget_id, options) => {
           try {
-            const qs: any = {
-              fields: ['id', 'type', 'version', 'draft', 'acct_id' ].join(','),
-              sort: 'id'
-            };
-            if (options.global) {
-              qs.global = true;
-            }
-            if (options.engagement) {
-              qs.q = 'eq(type,engagement)';
-            }
-            if (options.interaction) {
-              qs.q = 'eq(type,interaction)';
-            }
-            const data = (await ws('widgets', { qs })).reduce((o, i) => {
-              o[i.id] = i;
-              return o;
-            }, {});
-            (await fetchStrings(Object.keys(data).map(w => `WIDGET.${w}.NAME`).join(','), options.global)).reduce((o, i) => {
-              const id = i.id.replace(/^WIDGET\.([^\.]*)\.NAME$/, '$1');
-              if (o[id] && i.values && i.values.en && i.values.en.value) {
-                o[id].name = i.values.en.value;
+            if (widget_id) {
+              const qs: any = {
+                fields: ['id', 'type', 'version', 'draft', 'acct_id' ].join(','),
+                sort: '-version'
+              };
+              if (options.global) {
+                qs.global = true;
               }
-              return o;
-            }, data);
-
-            const columns = columnify(Object.entries(data).map(i => i[1]), {
-              columns: [
-                'id', 'type', 'version', 'draft', 'acct_id', 'name',
-              ],
-              config: {
-                draft: {
-                  dataTransform: data => data ? '✓' : ''
-                },
-                acct_id: {
-                  dataTransform: data => data ? '' : '✓',
-                  headingTransform: () => 'global'.toUpperCase()
-                },
+              const data = (await ws(`widgets/${widget_id}/all`, { qs }));
+              if (!data || !data.length) {
+                throw 'Unknown widget';
               }
-            });
-            console.log(columns);
+              const columns = columnify(data, {
+                columns: [
+                  'version', 'draft', 'acct_id'
+                ],
+                config: {
+                  draft: {
+                    dataTransform: data => data ? '✓' : ''
+                  },
+                  acct_id: {
+                    dataTransform: data => data ? '' : '✓',
+                    headingTransform: () => 'global'.toUpperCase()
+                  },
+                }
+              });
+              console.log(columns);
+            } else {
+              const qs: any = {
+                fields: ['id', 'type', 'version', 'draft', 'acct_id' ].join(','),
+                sort: 'id'
+              };
+              if (options.global) {
+                qs.global = true;
+              }
+              if (options.engagement) {
+                qs.q = 'eq(type,engagement)';
+              }
+              if (options.interaction) {
+                qs.q = 'eq(type,interaction)';
+              }
+              const data = (await ws('widgets', { qs })).reduce((o, i) => {
+                o[i.id] = i;
+                return o;
+              }, {});
+              if (!data || !data.length) {
+                throw 'No widgets found';
+              }
+              (await fetchStrings(Object.keys(data).map(w => `WIDGET.${w}.NAME`).join(','), options.global)).reduce((o, i) => {
+                const id = i.id.replace(/^WIDGET\.([^\.]*)\.NAME$/, '$1');
+                if (o[id] && i.values && i.values.en && i.values.en.value) {
+                  o[id].name = i.values.en.value;
+                }
+                return o;
+              }, data);
+  
+              const columns = columnify(Object.entries(data).map(i => i[1]), {
+                columns: [
+                  'id', 'type', 'version', 'draft', 'acct_id', 'name',
+                ],
+                config: {
+                  draft: {
+                    dataTransform: data => data ? '✓' : ''
+                  },
+                  acct_id: {
+                    dataTransform: data => data ? '' : '✓',
+                    headingTransform: () => 'global'.toUpperCase()
+                  },
+                }
+              });
+              console.log(columns);
+            }
           } catch(e) {
             console.error(e);
             process.exit(1);
@@ -264,6 +296,7 @@ const mkdirp = promisify(_mkdirp);
         .description('Pull a version of the widget from the Vivocha servers')
         .option('-d, --directory <widget path>', 'Pull the widget into the specified path')
         .option('-v, --ver <widget version>', 'Pull the specified version')
+        .option('-k, --keep-original-id', 'If the requested widget is global, do not add the suffix -custom to the pulled widget')
         .action(async (widget_id, options) => {
           const startDir = process.cwd();
           let exitCode = 0;
@@ -273,6 +306,13 @@ const mkdirp = promisify(_mkdirp);
             const manifest = await ws(`widgets/${widget_id}${options.ver ? '/' + options.ver : ''}${options.global ? '?global=true' : ''}`).catch(() => {
               throw `Failed to download ${options.ver ? 'the request version of ' : ''}widget ${widget_id}`;
             });
+            if (!manifest) {
+              throw 'Unknown widget';
+            }
+            if (!manifest.acct_id && !options.keepOriginalId) {
+              widget_id += '-custom';
+              manifest.id = widget_id;
+            }
             delete manifest.acct_id;
             delete manifest.version;
             delete manifest.draft;
@@ -303,6 +343,8 @@ const mkdirp = promisify(_mkdirp);
             await writeFile('./manifest.json', JSON.stringify(manifest, null, 2), 'utf8').catch(() => {
               throw 'Failed to write the manifest';
             });
+
+            console.log(`Widget successfully pulled into directory ${widgetDir}`);
 
           } catch(e) {
             console.error(e);
@@ -414,7 +456,7 @@ const mkdirp = promisify(_mkdirp);
             app.use('/main.scss', express.static(path.join(startDir, 'main.scss')));
             app.use('/assets', express.static(path.join(startDir, 'assets')));
             app.get('/widget', async (req, res) => {
-              let settings: WidgetSettings;
+              let settings: any;
               try {
                 settings = JSON.parse(fs.readFileSync(path.join(startDir, 'settings.json')).toString('utf8'))
               } catch(e) {
@@ -457,14 +499,8 @@ const mkdirp = promisify(_mkdirp);
             server.listen(options.port, options.host);
 
             if (options.watch) {
-              const filterRegExp: RegExp = new RegExp(`^${startDir}/(assets|main.html$|main.scss$|manifest.json$|strings.json$|settings.json$)`);
-              watch.watchTree(startDir, {
-                ignoreDotFiles: true,
-                filter: f => filterRegExp.test(f)
-              }, (f, curr, prev) => {
-                if (curr && prev) {
-                  reloader.reload();
-                }
+              fs.watch(startDir, 'utf8', (event, filename) => {
+                reloader.reload();
               });
             }
 
