@@ -9,6 +9,7 @@ import * as program from 'commander';
 import * as express from 'express';
 import * as fs from 'fs';
 import * as http from 'http';
+import * as inquirer from 'inquirer';
 import * as jsonpolice from 'jsonpolice';
 import * as _ from 'lodash';
 import * as _mkdirp from 'mkdirp';
@@ -88,7 +89,7 @@ const mkdirp = promisify(_mkdirp);
                 o[i.id] = i;
                 return o;
               }, {});
-              if (!data || !data.length) {
+              if (!data || !Object.keys(data).length) {
                 throw 'No widgets found';
               }
               (await fetchStrings(Object.keys(data).map(w => `WIDGET.${w}.NAME`).join(','), options.global)).reduce((o, i) => {
@@ -120,19 +121,6 @@ const mkdirp = promisify(_mkdirp);
             process.exit(1);
           }
         }),
-      /*
-      init: program
-        .command('init')
-        .description('Create a new widget')
-        .action(async options => {
-          try {
-            process.exit(0);
-          } catch(e) {
-            console.error(e);
-            process.exit(1);
-          }
-        }),
-      */
       push: program
         .command('push')
         .description('Push a new version of the widget to the Vivocha servers')
@@ -292,19 +280,19 @@ const mkdirp = promisify(_mkdirp);
           }
         }),
       pull: program
-        .command('pull <widget_id>')
+        .command('pull <widget_id> [version]')
         .description('Pull a version of the widget from the Vivocha servers')
         .option('-d, --directory <widget path>', 'Pull the widget into the specified path')
-        .option('-v, --ver <widget version>', 'Pull the specified version')
         .option('-k, --keep-original-id', 'If the requested widget is global, do not add the suffix -custom to the pulled widget')
-        .action(async (widget_id, options) => {
+        .option('-v, --verbose', 'Verbose output')
+        .action(async (widget_id, version, options) => {
           const startDir = process.cwd();
           let exitCode = 0;
 
           try {
             // get the manifest
-            const manifest = await ws(`widgets/${widget_id}${options.ver ? '/' + options.ver : ''}${options.global ? '?global=true' : ''}`).catch(() => {
-              throw `Failed to download ${options.ver ? 'the request version of ' : ''}widget ${widget_id}`;
+            const manifest = await ws(`widgets/${widget_id}${version ? '/' + version : ''}${options.global ? '?global=true' : ''}`).catch(() => {
+              throw `Failed to download ${version ? 'the request version of ' : ''}widget ${widget_id}`;
             });
             if (!manifest) {
               throw 'Unknown widget';
@@ -346,6 +334,39 @@ const mkdirp = promisify(_mkdirp);
 
             console.log(`Widget successfully pulled into directory ${widgetDir}`);
 
+          } catch(e) {
+            console.error(e);
+            exitCode = 1;
+          } finally {
+            process.chdir(startDir);
+            process.exit(exitCode);
+          }
+        }),
+      delete: program
+        .command('delete <widget_id>')
+        .description('Permanently delete all versions of a widget')
+        .option('-y, --yes', 'Do not ask for confirmation')
+        .option('-v, --verbose', 'Verbose output')
+        .action(async (widget_id, options) => {
+          const startDir = process.cwd();
+          let exitCode = 0;
+
+          try {
+            const proceed = options.yes || (await inquirer.prompt([
+              {
+                name: 'confirm',
+                type: 'confirm',
+                default: false,
+                message: 'WARNING: this operation is irreversible: are you sure you want to proceed?'
+              }
+            ])).confirm;
+
+            if (proceed) {
+              await ws(`widgets/${widget_id}${options.global ? '?global=true' : ''}`, { method: 'DELETE' }).catch(() => {
+                throw `Failed to remove all version of widget ${widget_id}`;
+              });
+              console.log(`Widget successfully removed`);
+            }
           } catch(e) {
             console.error(e);
             exitCode = 1;
@@ -531,6 +552,7 @@ const mkdirp = promisify(_mkdirp);
         commands.push.option('-g, --global', 'Push as global widget');
         commands.pull.option('-g, --global', 'Pull a global version of the requested widget');
         commands.activate.option('-g, --global', 'Activate a global widget');
+        commands.delete.option('-g, --global', 'Delete a global widget');
       }
     }
 
