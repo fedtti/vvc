@@ -1,7 +1,12 @@
-import * as _ from 'lodash';
-import { Eredita } from 'eredita';
 import { MultiLanguageString } from '@vivocha/public-entities/dist/language';
-import { ws } from './ws';
+import { Eredita } from 'eredita';
+import { readFileSync } from 'fs';
+import * as _ from 'lodash';
+import { promisify } from 'util';
+import { ws } from './ws';
+
+const PO = require('pofile');
+const poload = promisify(PO.load);
 
 interface StringMap {
   [id:string]: MultiLanguageString
@@ -83,4 +88,77 @@ export async function uploadStringChanges(newStrings: MultiLanguageString[], glo
     }
   }
   return stringIds;
+}
+export async function importPOFiles(files: string[], mergeTo: MultiLanguageString[], filter?: string): Promise<MultiLanguageString[]> {
+  const out: StringMap = mergeTo ? mergeTo.reduce(reducer, {}) : {};
+  for (let f of files) {
+    const data = await poload(f);
+    if (!data || !data.headers || !data.headers.Language) {
+      throw new Error('bad_file');
+    }
+    for (let i of (data.items || [])) {
+      if (filter && i.msgid.indexOf(filter) !== 0) {
+        continue;
+      }
+      if (!out[i.msgid]) {
+        out[i.msgid] = {
+          id: i.msgid,
+          values: {}
+        }
+      }
+      out[i.msgid].values[data.headers.Language] = {
+        value: i.msgstr[0] || '',
+        state: i.msgstr[0] ? (i.flags && i.flags.fuzzy ? 'needs-review' : 'final') : 'new'
+      }
+      if (i.msgctxt) {
+        out[i.msgid].description = i.msgctxt;
+      }
+    }
+  }
+  return Object.values(out);
+}
+export async function exportPOFiles(files: string[], project: string, language: string, prefix: string, basename: string) {
+  const out: {
+    [lang:string]: typeof PO
+  } = {}
+  function newPO(lang: string): typeof PO {
+    const po = new PO();
+    po.headers = {
+      'MIME-Version': '1.0',
+      'Content-Type': 'text/plain; charset=UTF-8',
+      'Content-Transfer-Encoding': '8bit',
+      'X-Generator': 'vvc',
+      'Project-Id-Version': project,
+      'Language': lang
+    };
+    po.headerOrder = [ 'MIME-Version', 'Content-Type', 'Content-Transfer-Encoding', 'X-Generator', 'Project-Id-Version', 'Language' ];
+    return po;
+  }
+  for (let f of files) {
+    const data = JSON.parse(readFileSync(f, 'utf8'));
+    for (let i of data) {
+      for (let l in (i.values || {})) {
+        if (!out[l]) {
+          out[l] = newPO(l);
+        }
+        const item = new PO.Item();
+        item.msgid = i.id;
+        item.msgstr = i.values[l].value || '';
+        if (i.description) {
+          item.msgctxt = i.description;
+        }
+        if (i.values[l].state === 'needs-review') {
+          item.flags = { fuzzy: true }
+        }
+        out[l].items.push(item);
+      }
+    }
+  }
+  for (let l in out) {
+    if (!language || language === l) {
+      const filename: string = `${basename}${l}.po`;
+      console.log(`Writing ${filename}`);
+      await promisify(out[l].save.bind(out[l]))(filename);
+    }
+  }
 }

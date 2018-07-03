@@ -5,10 +5,11 @@ import { Scopes } from 'arrest';
 import * as program from 'commander';
 import * as fs from 'fs';
 import * as jsonpolice from 'jsonpolice';
+import { parse as parsePath } from 'path';
 import { promisify } from 'util';
 import { Config, meta, read as readConfig } from './lib/config';
 import { checkLoginAndVersion } from './lib/startup';
-import { fetchStrings, uploadStringChanges } from './lib/strings';
+import { exportPOFiles, fetchStrings, importPOFiles, uploadStringChanges } from './lib/strings';
 import { retriever, wsUrl } from './lib/ws';
 
 const access = promisify(fs.access);
@@ -82,6 +83,71 @@ const access = promisify(fs.access);
             });
 
             process.stdout.write(JSON.stringify(strings, null, 2) + '\n');
+          } catch(e) {
+            console.error(e);
+            exitCode = 1;
+          } finally {
+            process.exit(exitCode);
+          }
+        }),
+      import: program
+        .command('import <po_file> [other_po_files...]')
+        .description('Import gettext formatted strings and convert them into the Vivocha format')
+        .option('-p, --prefix <strings prefix>', 'Import only the strings starting with prefix', '')
+        .option('-m, --merge <json to merge>', 'Merge existing strings into the output file', '')
+        .action(async (po_file, other_po_files, options) => {
+          let exitCode = 0;
+          let files;
+          if (other_po_files) {
+            files = [po_file, ...other_po_files];
+          } else {
+            files = [po_file];
+          }
+          try {
+            const mergeTo: MultiLanguageString[] = options.merge ? JSON.parse(fs.readFileSync(options.merge, 'utf8')) : [];
+            const strings = await importPOFiles(files, mergeTo, options.prefix);
+            process.stdout.write(JSON.stringify(strings, null, 2) + '\n');
+          } catch(e) {
+            console.error(e);
+            exitCode = 1;
+          } finally {
+            process.exit(exitCode);
+          }
+        }),
+      export: program
+        .command('export <strings_json_file> [other_json_files...]')
+        .description('Export Vivocha strings to gettext formatted strings')
+        .option('-l, --language <name>', 'Export only the specified language', '')
+        .option('-p, --prefix <strings prefix>', 'Export only the strings starting with prefix', '')
+        .option('-P, --path <output path>', 'Use the specified path/prefix when exporting', './')
+        .option('-b, --basename <output basename>', 'Use the specified basename when exporting', '')
+        .option('-i, --project-id <id>', 'Set the project id', '')
+        .action(async (strings_json_file, other_json_files, options) => {
+          let exitCode = 0;
+          let files;
+          if (other_json_files) {
+            files = [strings_json_file, ...other_json_files];
+          } else {
+            files = [strings_json_file];
+          }
+          try {
+            let basename = options.path;
+            if (options.basename) {
+              basename += options.basename;
+            } else if (files.length === 1) {
+              basename += `${parsePath(files[0]).name}_`;
+            } else {
+              basename += 'exported_';
+            }
+            let project = options.projectId;
+            if (!project) {
+              if (files.length === 1) {
+                project = parsePath(files[0]).name;
+              } else {
+                project = 'vivocha';
+              }
+            }
+            await exportPOFiles(files, project, options.language, options.prefix, basename);
           } catch(e) {
             console.error(e);
             exitCode = 1;
