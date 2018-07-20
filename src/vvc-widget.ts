@@ -124,7 +124,9 @@ const mkdirp = promisify(_mkdirp);
       push: program
         .command('push')
         .description('Push a new version of the widget to the Vivocha servers')
+        .option('-a, --activate', 'Activate the pushed widget')
         .option('-d, --directory <widget path>', 'Use the widget at the specified path', process.cwd())
+        .option('-r, --rescan', 'Rescan and upload all assets')
         .action(async options => {
           const startDir = process.cwd();
           let exitCode = 0;
@@ -213,7 +215,7 @@ const mkdirp = promisify(_mkdirp);
                 }
               }
             }
-            await uploadWidgetAssetChanges(manifest.id, Array.isArray(manifest.assets) ? manifest.assets : [], assets, options.global).catch(err => {
+            await uploadWidgetAssetChanges(manifest.id, !options.rescan && Array.isArray(manifest.assets) ? manifest.assets : [], assets, options.global).catch(err => {
               throw `failed to upload assets, ${err.message}`;
             });
 
@@ -267,6 +269,15 @@ const mkdirp = promisify(_mkdirp);
                 throw `failed to upload manifest.json, ${err.message || err.name}`;
               });
               console.log(`saved version ${newManifest.version} ${newManifest.draft ? 'draft' : ''}`);
+            }
+
+            if (options.activate) {
+              console.log('activating the new version');
+              await ws(`widgets/${manifest.id}/activate${options.global ? '?global=true' : ''}`, {
+                method: 'POST'
+              }).catch(err => {
+                throw `failed to activate the widget, ${err.message || err.name}`;
+              });
             }
 
             // update local manifest
@@ -378,10 +389,17 @@ const mkdirp = promisify(_mkdirp);
       activate: program
         .command('activate')
         .description('Publish a draft as a new production version')
+        .option('-d, --directory <widget path>', 'Use the widget at the specified path', process.cwd())
         .action(async options => {
+          const startDir = process.cwd();
           let exitCode = 0;
 
           try {
+            // change to the widget directory
+            if (options.directory !== startDir) {
+              process.chdir(options.directory);
+            }
+
             // check if manifest.json exists
             await access('./manifest.json', fs.constants.R_OK | fs.constants.W_OK).catch(() => {
               throw "manifest.json not found";
@@ -395,7 +413,7 @@ const mkdirp = promisify(_mkdirp);
               throw "Failed to parse manifest.json";
             });
 
-            const newManifest = await ws(`widgets/${manifest.id}/activate${options.global ? '?global=true' : ''}`, {
+            await ws(`widgets/${manifest.id}/activate${options.global ? '?global=true' : ''}`, {
               method: 'POST'
             }).catch(err => {
               throw `failed to activate the widget, ${err.message || err.name}`;
@@ -404,6 +422,7 @@ const mkdirp = promisify(_mkdirp);
             console.error(e);
             exitCode = 1;
           } finally {
+            process.chdir(startDir);
             process.exit(exitCode);
           }
         }),
