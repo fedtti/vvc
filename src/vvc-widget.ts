@@ -299,6 +299,7 @@ const mkdirp = promisify(_mkdirp);
         .action(async (widget_id, version, options) => {
           const startDir = process.cwd();
           let exitCode = 0;
+          let curr_widget_id = widget_id;
 
           try {
             // get the manifest
@@ -309,15 +310,15 @@ const mkdirp = promisify(_mkdirp);
               throw 'Unknown widget';
             }
             if (!manifest.acct_id && !options.keepOriginalId) {
-              widget_id += '-custom';
-              manifest.id = widget_id;
+              curr_widget_id += '-custom';
+              manifest.id = curr_widget_id;
             }
             delete manifest.acct_id;
             delete manifest.version;
             delete manifest.draft;
 
             // check that the destination dir does not exist
-            const widgetDir = options.directory || `./${widget_id}`;
+            const widgetDir = options.directory || `./${curr_widget_id}`;
             await access(widgetDir).then(() => {
               throw 'Destination path already exists';
             }, () => {});
@@ -329,6 +330,7 @@ const mkdirp = promisify(_mkdirp);
             process.chdir(widgetDir);
 
             // download and write the strings
+            console.log(`Downloading strings.json`);
             const strings = await fetchWidgetStrings(widget_id, options.global).catch(() => {
               throw 'Failed to download the strings';
             });
