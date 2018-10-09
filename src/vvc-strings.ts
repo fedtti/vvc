@@ -105,7 +105,7 @@ const access = promisify(fs.access);
           }
           try {
             const mergeTo: MultiLanguageString[] = options.merge ? JSON.parse(fs.readFileSync(options.merge, 'utf8')) : [];
-            const strings = await importPOFiles(files, mergeTo, options.prefix);
+            const strings = (await importPOFiles(files, mergeTo, options.prefix)).sort((a,b) => a.id.localeCompare(b.id));
             process.stdout.write(JSON.stringify(strings, null, 2) + '\n');
           } catch(e) {
             console.error(e);
