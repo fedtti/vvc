@@ -159,16 +159,17 @@ export async function exportPOFiles(files: string[], project: string, language: 
     for (let i of file) {
       const values = i.values || {};
       for (let l of languages) {
+        const value = values[l] || {};
         if (!out[l]) {
           out[l] = newPO(l);
         }
         const item = new PO.Item();
         item.msgid = i.id;
-        item.msgstr = (values[l] || {}).value || '';
+        item.msgstr = value.value || '';
         if (i.description) {
           item.msgctxt = i.description;
         }
-        if ((values[l] || {}).state === 'needs-review') {
+        if (value.value && (value.state === 'needs-review' || value.state === 'new')) {
           item.flags = { fuzzy: true }
         }
         out[l].items.push(item);
