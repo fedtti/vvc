@@ -23,7 +23,7 @@ program
   } catch(e) {}
 
   try {
-    const data = await inquirer.prompt([
+    const data: any = await inquirer.prompt([
       {
         name: 'acct_id',
         message: 'Account ID',

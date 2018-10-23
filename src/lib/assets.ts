@@ -1,12 +1,12 @@
-import * as fs from 'fs';
-import * as path  from 'path';
-import * as crypto from 'crypto';
-import { promisify } from 'util';
-import * as _mkdirp from 'mkdirp';
 import { Asset } from '@vivocha/public-entities';
-import walkdir from './walkdir';
+import * as crypto from 'crypto';
+import * as fs from 'fs';
+import * as _mkdirp from 'mkdirp';
+import * as path from 'path';
+import { promisify } from 'util';
 import { Config, read as readConfig } from './config';
-import { ws, download } from './ws';
+import walkdir from './walkdir';
+import { download, ws } from './ws';
 
 const stat = promisify(fs.stat);
 const access = promisify(fs.access);
@@ -28,7 +28,7 @@ export async function scanWidgetAssets(basepath: string): Promise<Asset[]> {
     if (rok && info.isFile()) {
       return {
         path: base_filename
-      }
+      } as Asset;
     } else {
       throw new Error(base_filename);
     }
@@ -65,7 +65,7 @@ export function hashWidgetAssets(assets: Asset[]): Promise<Asset[]> {
       stream.on('end', () => resolve({
         path: filename,
         hash: hash.digest('hex')
-      }));
+      } as Asset));
     }));
   });
   return Promise.all(hashedAssets);

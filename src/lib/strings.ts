@@ -91,11 +91,18 @@ export async function uploadStringChanges(newStrings: MultiLanguageString[], glo
 }
 export async function importPOFiles(files: string[], mergeTo: MultiLanguageString[], filter?: string): Promise<MultiLanguageString[]> {
   const out: StringMap = mergeTo ? mergeTo.reduce(reducer, {}) : {};
+  const pofiles: { [lang: string]: any } = {};
   for (let f of files) {
     const data = await poload(f);
     if (!data || !data.headers || !data.headers.Language) {
       throw new Error('bad_file');
     }
+    pofiles[data.headers.Language] = data;
+  }
+  const languages = Object.keys(pofiles).sort();
+
+  for (let l of languages) {
+    const data = pofiles[l];
     for (let i of (data.items || [])) {
       if (filter && i.msgid.indexOf(filter) !== 0) {
         continue;
@@ -106,9 +113,11 @@ export async function importPOFiles(files: string[], mergeTo: MultiLanguageStrin
           values: {}
         }
       }
-      out[i.msgid].values[data.headers.Language] = {
-        value: i.msgstr[0] || '',
-        state: i.msgstr[0] ? (i.flags && i.flags.fuzzy ? 'needs-review' : 'final') : 'new'
+      if (i.msgstr[0]) {
+        out[i.msgid].values[l] = {
+          value: i.msgstr[0],
+          state: (i.flags && i.flags.fuzzy ? 'needs-review' : 'final')
+        }
       }
       if (i.msgctxt) {
         out[i.msgid].description = i.msgctxt;
@@ -134,20 +143,32 @@ export async function exportPOFiles(files: string[], project: string, language: 
     po.headerOrder = [ 'MIME-Version', 'Content-Type', 'Content-Transfer-Encoding', 'X-Generator', 'Project-Id-Version', 'Language' ];
     return po;
   }
+  const _languages: Set<string> = new Set();
+  const data: any[] = [];
   for (let f of files) {
-    const data = JSON.parse(readFileSync(f, 'utf8'));
-    for (let i of data) {
+    const file = JSON.parse(readFileSync(f, 'utf8'));
+    data.push(file);
+    for (let i of file) {
       for (let l in (i.values || {})) {
+        _languages.add(l);
+      }
+    }
+  }
+  const languages: string[] = [..._languages].sort();
+  for (let file of data) {
+    for (let i of file) {
+      const values = i.values || {};
+      for (let l of languages) {
         if (!out[l]) {
           out[l] = newPO(l);
         }
         const item = new PO.Item();
         item.msgid = i.id;
-        item.msgstr = i.values[l].value || '';
+        item.msgstr = (values[l] || {}).value || '';
         if (i.description) {
           item.msgctxt = i.description;
         }
-        if (i.values[l].state === 'needs-review') {
+        if ((values[l] || {}).state === 'needs-review') {
           item.flags = { fuzzy: true }
         }
         out[l].items.push(item);

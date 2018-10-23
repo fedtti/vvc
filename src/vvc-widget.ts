@@ -365,14 +365,14 @@ const mkdirp = promisify(_mkdirp);
           let exitCode = 0;
 
           try {
-            const proceed = options.yes || (await inquirer.prompt([
+            const proceed = options.yes || ((await inquirer.prompt([
               {
                 name: 'confirm',
                 type: 'confirm',
                 default: false,
                 message: 'WARNING: this operation is irreversible: are you sure you want to proceed?'
               }
-            ])).confirm;
+            ])) as any).confirm;
 
             if (proceed) {
               await ws(`widgets/${widget_id}${options.global ? '?global=true' : ''}`, { method: 'DELETE' }).catch(() => {
