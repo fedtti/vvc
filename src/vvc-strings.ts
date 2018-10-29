@@ -118,6 +118,7 @@ const access = promisify(fs.access);
         .command('export <strings_json_file> [other_json_files...]')
         .description('Export Vivocha strings to gettext formatted strings')
         .option('-l, --language <name>', 'Export only the specified language', '')
+        .option('-r, --reference <language>', 'Reference translation to include in exported files', '')
         .option('-p, --prefix <strings prefix>', 'Export only the strings starting with prefix', '')
         .option('-P, --path <output path>', 'Use the specified path/prefix when exporting', './')
         .option('-b, --basename <output basename>', 'Use the specified basename when exporting', '')
@@ -147,7 +148,7 @@ const access = promisify(fs.access);
                 project = 'vivocha';
               }
             }
-            await exportPOFiles(files, project, options.language, options.prefix, basename);
+            await exportPOFiles(files, project, options.language, options.prefix, basename, options.reference);
           } catch(e) {
             console.error(e);
             exitCode = 1;

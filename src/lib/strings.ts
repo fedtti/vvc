@@ -126,7 +126,7 @@ export async function importPOFiles(files: string[], mergeTo: MultiLanguageStrin
   }
   return Object.values(out);
 }
-export async function exportPOFiles(files: string[], project: string, language: string, prefix: string, basename: string) {
+export async function exportPOFiles(files: string[], project: string, language: string, prefix: string, basename: string, referenceLanguage?: string) {
   const out: {
     [lang:string]: typeof PO
   } = {}
@@ -167,7 +167,14 @@ export async function exportPOFiles(files: string[], project: string, language: 
         item.msgid = i.id;
         item.msgstr = value.value || '';
         if (i.description) {
-          item.msgctxt = i.description;
+          item.extractedComments.push(i.description);
+        }
+        if (referenceLanguage && l !== referenceLanguage && values[referenceLanguage] && values[referenceLanguage].value) {
+          if (item.extractedComments.length) {
+            item.extractedComments.push("");
+          }
+          item.extractedComments.push(`REFERENCE ${referenceLanguage.toLocaleUpperCase()} TRANSLATION:`);
+          values[referenceLanguage].value.split('\n').forEach(r => item.extractedComments.push(r));
         }
         if (value.value && (value.state === 'needs-review' || value.state === 'new')) {
           item.flags = { fuzzy: true }
