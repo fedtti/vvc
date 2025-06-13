@@ -71,11 +71,10 @@
     "semver": "^7.7.2"
   },
   "devDependencies": {
-    "@types/debug": "0.0.31",
+    "@types/debug": "^4.1.12",
     "@types/express": "^5.0.3",
-    "@types/inquirer": "0.0.43",
+    "@types/inquirer": "^9.0.8",
     "@types/lodash": "^4.17.17",
-    "@types/mkdirp": "^0.5.2",
     "@types/node": "^22.15.31",
     "@types/request": "^2.48.12",
     "@types/semver": "^7.7.0",
