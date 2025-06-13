@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import * as program from 'commander';
+import program from 'commander';
 import { Config, meta, read as readConfig, unlink as unlinkConfig } from './lib/config';
 import { checkLoginAndVersion } from './lib/startup';
 import { ws } from './lib/ws';

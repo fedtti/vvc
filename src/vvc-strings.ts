@@ -2,7 +2,7 @@
 
 import { MultiLanguageString } from '@vivocha/public-entities';
 import { Scopes } from 'arrest';
-import * as program from 'commander';
+import program from 'commander';
 import * as fs from 'fs';
 import * as jsonpolice from 'jsonpolice';
 import { parse as parsePath } from 'path';

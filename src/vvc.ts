@@ -1,11 +1,16 @@
 #!/usr/bin/env node
 
-import * as program from 'commander';
-import { meta } from './lib/config';
+import { Command } from 'commander';
+import { meta } from './lib/config'; // To be renamed to 'Meta'.
+
+const program = new Command();
 
 program
-  .version(meta.version)
+  .name(meta.name)
   .description(meta.description)
+  .version(meta.version);
+
+program
   .command('info', 'Print info on the currently logged in user')
   .command('login', 'Login to you Vivocha account')
   .command('logout', 'Logout from your Vivocha account')

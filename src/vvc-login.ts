@@ -1,12 +1,14 @@
 #!/usr/bin/env node
 
-import * as program from 'commander';
+import { Command } from 'commander';
 import * as inquirer from 'inquirer';
 import * as request from 'request';
 import { URL } from 'url';
 import { Config, meta, read as readConfig, unlink as unlinkConfig, write as writeConfig } from './lib/config';
 import { checkLoginAndVersion } from './lib/startup';
 import { ws } from './lib/ws';
+
+const program = new Command();
 
 program
   .version(meta.version)
