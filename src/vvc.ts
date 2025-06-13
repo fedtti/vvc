@@ -12,8 +12,8 @@ program
   .version(meta.version);
 
 program
-  .command('info', 'Print info on the currently logged in user')
-  .command('login', 'Login to you Vivocha account')
+  .command('info', 'Print information on the currently logged-in user')
+  .command('login', 'Login to your Vivocha account')
   .command('logout', 'Logout from your Vivocha account')
   .command('widget', 'Manage engagement widgets')
   .command('strings', 'Manage translation strings')
