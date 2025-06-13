@@ -1,8 +1,7 @@
 #!/usr/bin/env node
 
 import { Command } from 'commander';
-
-import * as inquirer from 'inquirer';
+import { input, password } from '@inquirer/prompts';
 
 import request from 'request'; // TODO: replace with fetch().
 
@@ -16,7 +15,7 @@ const options = program.opts();
 
 program
   .version(meta.version)
-  .option('-s, --server [FQDN]', 'Login on custom Vivocha world/server')
+  .option('-s, --server [FQDN]', 'Login on custom Vivocha world and/or server')
   .option('-v, --verbose', 'Verbose output')
   .parse(process.argv);
 
@@ -26,30 +25,27 @@ program
     const config: Config = await readConfig();
     await ws(`clients/${config.user_id}`, { method: 'DELETE' });
     await unlinkConfig();
-  } catch(e) {}
+  } catch (error) {}
 
   try {
-    const data: any = await inquirer.prompt([
-      {
-        name: 'acct_id',
-        message: 'Account ID',
-        validate: v => !!v
-      },
-      {
-        name: 'user_id',
-        message: 'Username',
-        validate: v => !!v
-      },
-      {
-        name: 'password',
-        type: 'password',
-        message: 'Password',
-        validate: v => !!v
-      }
-    ]);
+    const accountId: string = await input({
+      message: 'Account ID',
+      validate: v => !!v
+    });
+
+    const userId: string = await input({
+      message: 'Username',
+      validate: v => !!v
+    });
+
+    const userPassword: string = await password({
+      message: 'Password',
+      validate: v => !!v,
+    });
+
     const server: string = options.server || await new Promise<string>((resolve, reject) => {
       request({
-        url: `https://www.vivocha.com/a/${data.acct_id}/api/v2/swagger.json`,
+        url: `https://i3.vivocha.com/a/${accountId}}/api/v3/openapi.json`,
         method: 'HEAD',
         followRedirect: false
       }, function(err, res, data) {
@@ -65,16 +61,16 @@ program
     });
     const client: any = await new Promise((resolve, reject) => {
       request({
-        url: `https://${server}/a/${data.acct_id}/api/v2/clients`,
+        url: `https://${server}/a/${accountId}/api/v2/clients`,
         method: 'POST',
         json: true,
         body: {
           scope: [ 'Widget.*', 'Asset.*', 'String.*', 'Reflect.cli', 'Client.remove' ],
-          user_id: data.user_id
+          user_id: userId
         },
         auth: {
-          user: data.user_id,
-          pass: data.password,
+          user: userId,
+          pass: userPassword,
           sendImmediately: true
         }
       }, function(err, res, data) {
@@ -89,7 +85,7 @@ program
     });
     const config: Config = await readConfig().catch(() => { return {} as Config });
 
-    config.acct_id = data.acct_id;
+    config.acct_id = accountId;
     config.user_id = client.id;
     config.secret = client.secret;
     config.server = server;

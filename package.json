@@ -54,6 +54,7 @@
   },
   "homepage": "https://github.com/vivocha/vvc#readme",
   "dependencies": {
+    "@inquirer/prompts": "^7.5.3",
     "@vivocha/public-entities": "^8.4.7",
     "arrest": "^13.2.5",
     "body-parser": "^2.2.0",
@@ -61,7 +62,6 @@
     "commander": "^14.0.0",
     "eredita": "^1.2.1",
     "express": "^5.1.0",
-    "inquirer": "^12.6.3",
     "jsonpolice": "^12.0.0",
     "lodash": "^4.17.21",
     "openurl": "^1.1.1",
@@ -73,7 +73,6 @@
   "devDependencies": {
     "@types/debug": "^4.1.12",
     "@types/express": "^5.0.3",
-    "@types/inquirer": "^9.0.8",
     "@types/lodash": "^4.17.17",
     "@types/node": "^22.15.31",
     "@types/request": "^2.48.12",
