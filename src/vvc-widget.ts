@@ -7,13 +7,13 @@ import * as bodyParser from 'body-parser';
 import * as columnify from 'columnify';
 
 import { Command } from 'commander';
+import { confirm } from '@inquirer/prompts';
 import express from 'express';
 
 import * as fs from 'fs';
 import * as http from 'http';
-import * as inquirer from 'inquirer';
 import * as jsonpolice from 'jsonpolice';
-import * as _ from 'lodash';
+import _ from 'lodash';
 import { open as openurl } from 'openurl';
 import * as path from 'path';
 import * as reload from 'reload';
@@ -368,14 +368,10 @@ const writeFile = promisify(fs.writeFile);
           let exitCode = 0;
 
           try {
-            const proceed = options.yes || ((await inquirer.prompt([
-              {
-                name: 'confirm',
-                type: 'confirm',
-                default: false,
-                message: 'WARNING: this operation is irreversible: are you sure you want to proceed?'
-              }
-            ])) as any).confirm;
+            const proceed: boolean = options.yes || await confirm({
+              default: false,
+              message: 'WARNING: this operation is irreversible: are you sure you want to proceed?'
+            });
 
             if (proceed) {
               await ws(`widgets/${widget_id}${options.global ? '?global=true' : ''}`, { method: 'DELETE' }).catch(() => {
@@ -585,5 +581,4 @@ const writeFile = promisify(fs.writeFile);
     console.error(err);
     process.exit(1);
   }
-
 })();

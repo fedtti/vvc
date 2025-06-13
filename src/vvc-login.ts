@@ -45,7 +45,7 @@ program
 
     const server: string = options.server || await new Promise<string>((resolve, reject) => {
       request({
-        url: `https://i3.vivocha.com/a/${accountId}}/api/v3/openapi.json`,
+        url: `https://www.vivocha.com/a/${accountId}}/api/v3/openapi.json`,
         method: 'HEAD',
         followRedirect: false
       }, function(err, res, data) {
@@ -59,6 +59,7 @@ program
         }
       });
     });
+    
     const client: any = await new Promise((resolve, reject) => {
       request({
         url: `https://${server}/a/${accountId}/api/v2/clients`,
