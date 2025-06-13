@@ -5,8 +5,10 @@ import { getStringsObject } from '@vivocha/public-entities/dist/wrappers/languag
 import { Scopes } from 'arrest';
 import * as bodyParser from 'body-parser';
 import * as columnify from 'columnify';
-import * as program from 'commander';
-import * as express from 'express';
+
+import { Command } from 'commander';
+import express from 'express';
+
 import * as fs from 'fs';
 import * as http from 'http';
 import * as inquirer from 'inquirer';
@@ -29,6 +31,9 @@ const mkdirp = promisify(_mkdirp);
 
 (async () => {
   try {
+    const program = new Command();
+    const options = program.opts();
+
     await checkLoginAndVersion();
     const config: Config = await readConfig();
 

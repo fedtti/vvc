@@ -1,11 +1,14 @@
 #!/usr/bin/env node
 
-import program from 'commander';
+import { Command } from 'commander';
 import { Config, meta, read as readConfig, unlink as unlinkConfig } from './lib/config';
 import { checkLoginAndVersion } from './lib/startup';
 import { ws } from './lib/ws';
 
 (async () => {
+  const program = new Command();
+  const options = program.opts();
+
   try {
     program
       .version(meta.version)
@@ -19,7 +22,7 @@ import { ws } from './lib/ws';
     console.log('Logged out');
     process.exit(0);
   } catch(e) {
-    if (program.verbose) {
+    if (options.verbose) {
       console.error(e);
     }
     unlinkConfig().then(() => {

@@ -2,7 +2,7 @@
 
 import { MultiLanguageString } from '@vivocha/public-entities';
 import { Scopes } from 'arrest';
-import program from 'commander';
+import { Command } from 'commander';
 import * as fs from 'fs';
 import * as jsonpolice from 'jsonpolice';
 import { parse as parsePath } from 'path';
@@ -15,6 +15,9 @@ import { retriever, wsUrl } from './lib/ws';
 const access = promisify(fs.access);
 
 (async () => {
+  const program = new Command();
+  const options = program.opts();
+
   try {
     await checkLoginAndVersion();
     const config: Config = await readConfig();
@@ -171,7 +174,7 @@ const access = promisify(fs.access);
 
     program.parse(process.argv);
   } catch(err) {
-    if (program.verbose) {
+    if (options.verbose) {
       console.error(err);
     } else {
       console.error('Failed');

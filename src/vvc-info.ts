@@ -1,7 +1,9 @@
 #!/usr/bin/env node
 
 import { Command } from 'commander';
-import { Config, meta, read as readConfig } from './lib/config';
+
+import { Config, meta, read as readConfig } from './lib/config'; // TODO: Rename to 'Meta' and 'Read'.
+
 import { checkLoginAndVersion } from './lib/startup';
 
 (async () => {

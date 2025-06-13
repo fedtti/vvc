@@ -1,14 +1,18 @@
 #!/usr/bin/env node
 
 import { Command } from 'commander';
+
 import * as inquirer from 'inquirer';
-import * as request from 'request';
+
+import * as request from 'request'; // TODO: replace with fetch().
+
 import { URL } from 'url';
 import { Config, meta, read as readConfig, unlink as unlinkConfig, write as writeConfig } from './lib/config';
 import { checkLoginAndVersion } from './lib/startup';
 import { ws } from './lib/ws';
 
 const program = new Command();
+const options = program.opts();
 
 program
   .version(meta.version)
@@ -43,7 +47,7 @@ program
         validate: v => !!v
       }
     ]);
-    const server: string = program.server || await new Promise<string>((resolve, reject) => {
+    const server: string = options.server || await new Promise<string>((resolve, reject) => {
       request({
         url: `https://www.vivocha.com/a/${data.acct_id}/api/v2/swagger.json`,
         method: 'HEAD',
@@ -93,7 +97,7 @@ program
     console.log('Logged in');
     process.exit(0);
   } catch(e) {
-    if (program.verbose) {
+    if (options.verbose) {
       console.error(e);
     }
     console.error('Login failed');

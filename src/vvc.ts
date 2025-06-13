@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 
 import { Command } from 'commander';
-import { meta } from './lib/config'; // To be renamed to 'Meta'.
+
+import { meta } from './lib/config'; // TODO: Rename to 'Meta'.
 
 const program = new Command();
 
