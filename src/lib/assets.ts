@@ -1,7 +1,6 @@
 import { Asset } from '@vivocha/public-entities';
 import * as crypto from 'crypto';
 import * as fs from 'fs';
-import * as _mkdirp from 'mkdirp';
 import * as path from 'path';
 import { promisify } from 'util';
 import { Config, read as readConfig } from './config';
@@ -10,7 +9,6 @@ import { download, ws } from './ws';
 
 const stat = promisify(fs.stat);
 const access = promisify(fs.access);
-const mkdirp = promisify(_mkdirp);
 
 export async function scanWidgetAssets(basepath: string): Promise<Asset[]> {
   const assets: Promise<Asset>[] = [];
@@ -128,7 +126,7 @@ async function downloadAsset(url: string, filename: string) {
         throw `Destination path ${pathInfo.dir} exists and it\'s not a directory`;
       }
     }, async () => {
-      await mkdirp(pathInfo.dir).catch(() => {
+      await fs.mkdir(pathInfo.dir, { recursive: true }, () => {
         throw `Cannot create path ${pathInfo.dir}`;
       });
     });

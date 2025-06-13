@@ -61,7 +61,6 @@
     "inquirer": "^6.5.2",
     "jsonpolice": "^7.0.3",
     "lodash": "^4.17.21",
-    "mkdirp": "^0.5.6",
     "openurl": "^1.1.1",
     "pofile": "^1.1.4",
     "reload": "^2.4.0",

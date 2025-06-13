@@ -1,6 +1,7 @@
-import * as semver from 'semver';
+import semver from 'semver';
+
 import { read as readConfig, meta } from './config';
-import { ws } from './ws';
+import { ws } from './ws';
 
 export async function checkLoginAndVersion() {
   const config = await readConfig().catch(err => {

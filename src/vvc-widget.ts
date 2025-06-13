@@ -14,7 +14,6 @@ import * as http from 'http';
 import * as inquirer from 'inquirer';
 import * as jsonpolice from 'jsonpolice';
 import * as _ from 'lodash';
-import * as _mkdirp from 'mkdirp';
 import { open as openurl } from 'openurl';
 import * as path from 'path';
 import * as reload from 'reload';
@@ -27,7 +26,6 @@ import { retriever, ws, wsUrl } from './lib/ws';
 
 const access = promisify(fs.access);
 const writeFile = promisify(fs.writeFile);
-const mkdirp = promisify(_mkdirp);
 
 (async () => {
   try {
@@ -329,7 +327,7 @@ const mkdirp = promisify(_mkdirp);
             }, () => {});
 
             // create the destination dir and move into it
-            await mkdirp(widgetDir).catch(() => {
+            await fs.mkdir(widgetDir, { recursive: true }, () => {
               throw `Cannot create directory ${widgetDir}`;
             });
             process.chdir(widgetDir);
