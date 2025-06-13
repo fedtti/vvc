@@ -44,7 +44,9 @@
     "README.md",
     "LICENSE"
   ],
-  "author": "Federico Pinna <fpinna@vivocha.com> (http://www.vivocha.com/)",
+  "author": "Federico Pinna <fpinna@vivocha.com> (https://www.vivocha.com/)",
+  "contributors": [
+    "Federico Moretti <fmoretti@vivocha.com> (https://www.vivocha.com/)"],
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/vivocha/vvc/issues"
