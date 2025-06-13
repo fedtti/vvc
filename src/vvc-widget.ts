@@ -434,7 +434,7 @@ const writeFile = promisify(fs.writeFile);
       server: program
         .command('server')
         .description('Start a development server to test the widget on the local machine')
-        .option('-p, --port <port>', 'Server port, default 8085', 8085)
+        .option('-p, --port <port>', 'Server port, default 8085', '8085')
         .option('-h, --host <host>', 'Server host, default localhost', 'localhost')
         .option('-n, --no-open', 'Do not attempt to open the test app on a browser')
         .option('-w, --watch', 'Automatically reload the page if any file change is detected')

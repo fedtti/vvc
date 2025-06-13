@@ -4,7 +4,7 @@ import { Command } from 'commander';
 
 import * as inquirer from 'inquirer';
 
-import * as request from 'request'; // TODO: replace with fetch().
+import request from 'request'; // TODO: replace with fetch().
 
 import { URL } from 'url';
 import { Config, meta, read as readConfig, unlink as unlinkConfig, write as writeConfig } from './lib/config';
