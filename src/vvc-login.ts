@@ -17,20 +17,22 @@ program
 
 /**
  * Checks the validity of the account ID provided.
- * @param {string} account - 
- * @returns {boolean} - 
+ * @param {string} account - The account ID to check.
+ * @returns {boolean} - True if the account ID is valid, false otherwise.
  */
 const checkAccountId = async (account: string): Promise<boolean> => {
   try {
     const url = `https://www.vivocha.com/a/${account}/api/v3/openapi.json`;
-
-    return true;
+    const response = await fetch(url, {
+      method: 'HEAD'
+    });
+    return response.ok; // If the response is OK, the account ID is valid.
   } catch (error) {
     console.error(`Invalid account ID: ${account}.`);
   }
 };
 
-(async () => {
+(async (): Promise<void> => {
   try {
     await checkLoginAndVersion();
     const config: Config = await readConfig();
@@ -52,23 +54,6 @@ const checkAccountId = async (account: string): Promise<boolean> => {
 
     const userPassword: string = await password({
       message: 'Password'
-    });
-    
-    new Promise<string>((resolve, reject) => {
-      request({
-        url: `https://www.vivocha.com/a/${accountId}}/api/v3/openapi.json`,
-        method: 'HEAD',
-        followRedirect: false
-      }, function(err, res, data) {
-        if (err) {
-          reject(err);
-        } else if (res.statusCode !== 302 || !res.headers.location) {
-          reject(new Error('invalid account'));
-        } else {
-          let u = new URL(Array.isArray(res.headers.location) ? res.headers.location[0] as string: res.headers.location as string);
-          resolve(u.host);
-        }
-      });
     });
     
     const client: any = await new Promise((resolve, reject) => {
@@ -100,7 +85,6 @@ const checkAccountId = async (account: string): Promise<boolean> => {
     config.acct_id = accountId;
     config.user_id = client.id;
     config.secret = client.secret;
-    config.server = server;
     await writeConfig(config);
     console.log('Logged in');
     process.exit(0);

@@ -6,7 +6,6 @@ export interface Config {
   acct_id: string;
   user_id: string;
   secret: string;
-  server: string;
   info: any;
 }
 
