@@ -13,24 +13,24 @@ import { checkLoginAndVersion } from './lib/startup';
   try {
     program
       .version(meta.version)
-      .option('-v, --verbose', 'Verbose output')
+      .option('-v, --verbose', 'Verbose output') // TODO: Give a better description.
       .parse(process.argv);
   
     await checkLoginAndVersion();
     const config: Config = await readConfig();
 
-    console.log(`Currently logged in to account ${config.acct_id} on world ${config.server}`);
-
+    console.log(`Currently logged in to account ${config.acct_id} on world ${config.server}.`);
 
     if (options.verbose) {
       console.log(`Server info: ${JSON.stringify(config.info, null, 2)}`);
     }
+
     process.exit(0);
-  } catch(e) {
-    if (e === 'Not logged in' || e.toString().match(/^Config file not found/)) {
+  } catch(error) {
+    if (error === 'Not logged in' || error.toString().match(/^Config file not found/)) {
       console.log('Not logged in');
     } else if (options.verbose) {
-      console.error(e);
+      console.error(error);
     } else {
       console.error('Failed');
     }

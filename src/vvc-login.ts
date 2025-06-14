@@ -3,9 +3,6 @@
 import { Command } from 'commander';
 import { input, password } from '@inquirer/prompts';
 
-import request from 'request'; // TODO: replace with fetch().
-
-import { URL } from 'url';
 import { Config, meta, read as readConfig, unlink as unlinkConfig, write as writeConfig } from './lib/config';
 import { checkLoginAndVersion } from './lib/startup';
 import { ws } from './lib/ws';
@@ -15,9 +12,23 @@ const options = program.opts();
 
 program
   .version(meta.version)
-  .option('-s, --server [FQDN]', 'Login on custom Vivocha world and/or server')
   .option('-v, --verbose', 'Verbose output')
   .parse(process.argv);
+
+/**
+ * Checks the validity of the account ID provided.
+ * @param {string} account - 
+ * @returns {boolean} - 
+ */
+const checkAccountId = async (account: string): Promise<boolean> => {
+  try {
+    const url = `https://www.vivocha.com/a/${account}/api/v3/openapi.json`;
+
+    return true;
+  } catch (error) {
+    console.error(`Invalid account ID: ${account}.`);
+  }
+};
 
 (async () => {
   try {
@@ -30,20 +41,20 @@ program
   try {
     const accountId: string = await input({
       message: 'Account ID',
-      validate: v => !!v
+      required: true,
+      validate: checkAccountId
     });
 
     const userId: string = await input({
       message: 'Username',
-      validate: v => !!v
+      required: true,
     });
 
     const userPassword: string = await password({
-      message: 'Password',
-      validate: v => !!v,
+      message: 'Password'
     });
-
-    const server: string = options.server || await new Promise<string>((resolve, reject) => {
+    
+    new Promise<string>((resolve, reject) => {
       request({
         url: `https://www.vivocha.com/a/${accountId}}/api/v3/openapi.json`,
         method: 'HEAD',
@@ -62,7 +73,7 @@ program
     
     const client: any = await new Promise((resolve, reject) => {
       request({
-        url: `https://${server}/a/${accountId}/api/v2/clients`,
+        url: `https://${server}/a/${accountId}/api/v3/client`,
         method: 'POST',
         json: true,
         body: {
