@@ -10,22 +10,18 @@ import { Command } from 'commander';
 import { confirm } from '@inquirer/prompts';
 import express from 'express';
 
-import * as fs from 'fs';
+import fs from 'fs/promises';
 import * as http from 'http';
 import * as jsonpolice from 'jsonpolice';
 import _ from 'lodash';
 import { open as openurl } from 'openurl';
 import * as path from 'path';
 import * as reload from 'reload';
-import { promisify } from 'util';
 import { downloadAssets, hashWidgetAssets, scanWidgetAssets, uploadWidgetAssetChanges } from './lib/assets';
 import { Config, meta, read as readConfig } from './lib/config';
 import { checkLoginAndVersion } from './lib/startup';
 import { fetchStrings, fetchWidgetStrings, uploadWidgetStringChanges } from './lib/strings';
 import { retriever, ws, wsUrl } from './lib/ws';
-
-const access = promisify(fs.access);
-const writeFile = promisify(fs.writeFile);
 
 (async () => {
   try {
@@ -147,7 +143,7 @@ const writeFile = promisify(fs.writeFile);
 
             // load manifest.json
             let manifest: WidgetManifest = await new Promise<WidgetManifest>(resolve => {
-              const raw = fs.readFileSync('./manifest.json').toString('utf8');
+              const raw = fs.readFile('./manifest.json').toString();
               resolve(JSON.parse(raw) as WidgetManifest);
             }).catch(() => {
               throw "Failed to parse manifest.json";
@@ -175,7 +171,7 @@ const writeFile = promisify(fs.writeFile);
 
             // load strings.json
             const strings: MultiLanguageString[] = await new Promise<MultiLanguageString[]>(resolve => {
-              const raw = fs.readFileSync('./strings.json').toString('utf8');
+              const raw = fs.readFile('./strings.json').toString();
               resolve(JSON.parse(raw) as MultiLanguageString[]);
             }).catch(() => {
               throw "Failed to parse strings.json";
@@ -408,7 +404,7 @@ const writeFile = promisify(fs.writeFile);
 
             // load manifest.json
             let manifest: WidgetManifest = await new Promise<WidgetManifest>(resolve => {
-              const raw = fs.readFileSync('./manifest.json').toString('utf8');
+              const raw = fs.readFile('./manifest.json').toString();
               resolve(JSON.parse(raw) as WidgetManifest);
             }).catch(() => {
               throw "Failed to parse manifest.json";
@@ -438,7 +434,7 @@ const writeFile = promisify(fs.writeFile);
           const startDir = process.cwd();
 
           try {
-            const manifest: WidgetManifest = JSON.parse(fs.readFileSync(path.join(startDir, 'manifest.json')).toString('utf8'));
+            const manifest: WidgetManifest = JSON.parse(fs.readFile(path.join(startDir, 'manifest.json')).toString());
 
             if (manifest.type !== 'engagement') {
               throw 'Server mode only supports engagement widgets';
@@ -499,7 +495,7 @@ const writeFile = promisify(fs.writeFile);
             app.get('/widget', async (req, res) => {
               let settings: any;
               try {
-                settings = JSON.parse(fs.readFileSync(path.join(startDir, 'settings.json')).toString('utf8'))
+                settings = JSON.parse(fs.readFile(path.join(startDir, 'settings.json')).toString())
               } catch(e) {
                 settings = {
                   templateId: manifest.id,
@@ -512,7 +508,7 @@ const writeFile = promisify(fs.writeFile);
                   requestedLanguage: 'en',
                   defaultLanguage: 'en'
                 };
-                fs.writeFileSync(path.join(startDir, 'settings.json'), JSON.stringify(settings, null, 2));
+                fs.writeFile(path.join(startDir, 'settings.json'), JSON.stringify(settings, null, 2));
               }
 
               const requestedLanguage = settings.requestedLanguage || 'en';
@@ -520,7 +516,7 @@ const writeFile = promisify(fs.writeFile);
               delete settings.requestedLanguage;
               delete settings.defaultLanguage;
 
-              const strings: any = getStringsObject(JSON.parse(fs.readFileSync(path.join(startDir, 'strings.json')).toString('utf8')), requestedLanguage, defaultLanguage);
+              const strings: any = getStringsObject(JSON.parse(fs.readFile(path.join(startDir, 'strings.json')).toString()), requestedLanguage, defaultLanguage);
 
               res.json({
                 id: '' + +new Date(),
@@ -540,7 +536,7 @@ const writeFile = promisify(fs.writeFile);
             server.listen(options.port, options.host);
 
             if (options.watch) {
-              fs.watch(startDir, 'utf8', (event, filename) => {
+              fs.watch(startDir, (event, filename) => {
                 reloader.reload();
               });
             }
