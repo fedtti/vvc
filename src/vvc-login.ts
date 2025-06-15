@@ -12,7 +12,7 @@ const options = program.opts();
 
 program
   .version(meta.version)
-  .option('-v, --verbose', 'Verbose output')
+  .option('-v, --verbose', 'Verbose output') // TODO: Write a better description.
   .parse(process.argv);
 
 /**
@@ -29,6 +29,7 @@ const checkAccountId = async (account: string): Promise<boolean> => {
     return response.ok; // If the response is OK, the account ID is valid.
   } catch (error) {
     console.error(`Invalid account ID: ${account}.`);
+    throw new Error(error.message);
   }
 };
 
@@ -41,8 +42,10 @@ const checkAccountId = async (account: string): Promise<boolean> => {
     await ws(`clients/${config.user_id}`, { method: 'DELETE' });
     
     await unlinkConfig();
-  } catch (error) {
 
+  } catch (error) {
+    console.error(); // TODO
+    throw new Error(error.message);
   }
 
   try {
@@ -97,6 +100,7 @@ const checkAccountId = async (account: string): Promise<boolean> => {
   } catch(error) {
     if (options.verbose) {
       console.error(error.message);
+      throw new Error(error.message);
     }
 
     console.error('Login failed.');
