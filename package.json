@@ -21,14 +21,13 @@
   "files": [
     "dist/**/*.js",
     "dist/**/*.ts",
-    "app/bg.png",
+    "app/bg.svg",
     "app/index.html",
     "app/vivocha_widget_tester.js",
-    "app/sass.worker.js",
-    "README.md",
-    "LICENSE"
+    "LICENSE",
+    "README.md"
   ],
-  "main": "dist/index.js",
+  "main": "./dist/index.js",
   "bin": {
     "vvc": "./dist/vvc.js",
     "vvc-info": "./dist/vvc-info.js",
