@@ -1,5 +1,5 @@
 {
-  "id": "popup1",
+  "id": "popup",
   "variables": [
     {
       "id": "primaryColor",
@@ -53,71 +53,5 @@
     "STRINGS.CHAT",
     "STRINGS.VOICE",
     "STRINGS.VIDEO"
-  ],
-  "htmlId": "widgets/popup1/main.html",
-  "scssId": "widgets/popup1/main.scss",
-  "assets": [
-    {
-      "path": "main.html",
-      "hash": "3ea6036d7aa5a43d4699c492f559296249e2af75cd5a479b70602a2eab5edfde",
-      "id": "widgets/popup1/main.html",
-      "size": 1530,
-      "type": "text/html"
-    },
-    {
-      "path": "main.scss",
-      "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "id": "widgets/popup1/main.scss",
-      "type": "text/x-scss"
-    },
-    {
-      "path": "assets/artboard.png",
-      "hash": "69236e4b929d969c3c5c6dd3f7becbd9e0d740f77ed2725077fd8c694d721f6f",
-      "id": "widgets/popup1/assets/artboard.png",
-      "size": 101484,
-      "type": "image/png"
-    },
-    {
-      "path": "assets/company.png",
-      "hash": "f80ec9668a6dd4f72542e417e8a7722242318c74b446ea0785f2b6fa74152f0e",
-      "id": "widgets/popup1/assets/company.png",
-      "size": 1689,
-      "type": "image/png"
-    },
-    {
-      "path": "assets/vivicon/style.css",
-      "hash": "e35e31e631519347281cf8318abe3fc5a5f3a6251bd706ffa28734b27bd61ab4",
-      "id": "widgets/popup1/assets/vivicon/style.css",
-      "size": 2262,
-      "type": "text/css"
-    },
-    {
-      "path": "assets/vivicon/fonts/vvc-widget-ico.eot",
-      "hash": "fb77f49309bae0a600b1f12cc4e05d426c30f22257164b39f99bc3729fa1a730",
-      "id": "widgets/popup1/assets/vivicon/fonts/vvc-widget-ico.eot",
-      "size": 7644,
-      "type": "application/vnd.ms-fontobject"
-    },
-    {
-      "path": "assets/vivicon/fonts/vvc-widget-ico.svg",
-      "hash": "753018d410fef41a4c714973c424cb37365af5d85351cc886a831114a40f7d86",
-      "id": "widgets/popup1/assets/vivicon/fonts/vvc-widget-ico.svg",
-      "size": 25387,
-      "type": "image/svg+xml"
-    },
-    {
-      "path": "assets/vivicon/fonts/vvc-widget-ico.ttf",
-      "hash": "840ccbb546b228ce092ef18427099ef053f1acab3fa5f5202bf123e3aafcbff2",
-      "id": "widgets/popup1/assets/vivicon/fonts/vvc-widget-ico.ttf",
-      "size": 7452,
-      "type": "application/x-font-ttf"
-    },
-    {
-      "path": "assets/vivicon/fonts/vvc-widget-ico.woff",
-      "hash": "0f6280ab22e4cd4c39f37f5777a87501615f3fa70217f75434a534c7b1c82861",
-      "id": "widgets/popup1/assets/vivicon/fonts/vvc-widget-ico.woff",
-      "size": 7528,
-      "type": "application/font-woff"
-    }
   ]
 }
