@@ -13,8 +13,8 @@
     "vvc-strings": "./dist/vvc-strings.js"
   },
   "scripts": {
-    "clean": "rimraf dist coverage .nyc_output node_modules app/sass.worker.js app/vivocha_widget_tester.js",
-    "prebuild": "rimraf dist",
+    "clean": "rm -fr dist coverage .nyc_output node_modules app/sass.worker.js app/vivocha_widget_tester.js",
+    "prebuild": "rm -fr dist/",
     "build": "tsc && tsc -p app && cp node_modules/sass.js/dist/sass.worker.js app/ && webpack --config app/webpack.config.js --context app",
     "check-coverage": "nyc check-coverage --statements 100 --branches 100 --functions 100 --lines 100",
     "report-coverage": "cat ./coverage/lcov.info | coveralls",
@@ -68,7 +68,8 @@
     "pofile": "^1.1.4",
     "reload": "^3.3.0",
     "request": "^2.88.2",
-    "semver": "^7.7.2"
+    "semver": "^7.7.2",
+    "vite": "^6.3.5"
   },
   "devDependencies": {
     "@types/debug": "^4.1.12",
@@ -86,7 +87,6 @@
     "husky": "1.1.2",
     "mocha": "5.2.0",
     "nyc": "13.1.0",
-    "rimraf": "2.6.2",
     "sass": "^1.89.2",
     "semantic-release": "^15.14.0",
     "typescript": "3.1.3",

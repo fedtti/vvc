@@ -35,10 +35,15 @@ const checkAccountId = async (account: string): Promise<boolean> => {
 (async (): Promise<void> => {
   try {
     await checkLoginAndVersion();
+
     const config: Config = await readConfig();
+    
     await ws(`clients/${config.user_id}`, { method: 'DELETE' });
+    
     await unlinkConfig();
-  } catch (error) {}
+  } catch (error) {
+
+  }
 
   try {
     const accountId: string = await input({
@@ -46,53 +51,55 @@ const checkAccountId = async (account: string): Promise<boolean> => {
       required: true,
       validate: checkAccountId
     });
-
     const userId: string = await input({
       message: 'Username',
       required: true,
     });
-
     const userPassword: string = await password({
       message: 'Password'
     });
     
-    const client: any = await new Promise((resolve, reject) => {
-      request({
-        url: `https://${server}/a/${accountId}/api/v3/client`,
-        method: 'POST',
-        json: true,
-        body: {
-          scope: [ 'Widget.*', 'Asset.*', 'String.*', 'Reflect.cli', 'Client.remove' ],
-          user_id: userId
-        },
-        auth: {
-          user: userId,
-          pass: userPassword,
-          sendImmediately: true
-        }
-      }, function(err, res, data) {
-        if (err) {
-          reject(err);
-        } else if (res.statusCode !== 201) {
-          reject(new Error('login failed'));
-        } else {
-          resolve(data);
-        }
-      });
-    });
+    // const client: any = await new Promise((resolve, reject) => {
+    //   request({
+    //     url: `https://${server}/a/${accountId}/api/v3/client`,
+    //     method: 'POST',
+    //     json: true,
+    //     body: {
+    //       scope: [ 'Widget.*', 'Asset.*', 'String.*', 'Reflect.cli', 'Client.remove' ],
+    //       user_id: userId
+    //     },
+    //     auth: {
+    //       user: userId,
+    //       pass: userPassword,
+    //       sendImmediately: true
+    //     }
+    //   }, function(err, res, data) {
+    //     if (err) {
+    //       reject(err);
+    //     } else if (res.statusCode !== 201) {
+    //       reject(new Error('login failed'));
+    //     } else {
+    //       resolve(data);
+    //     }
+    //   });
+    // });
+
     const config: Config = await readConfig().catch(() => { return {} as Config });
 
     config.acct_id = accountId;
     config.user_id = client.id;
     config.secret = client.secret;
+
     await writeConfig(config);
-    console.log('Logged in');
+
+    console.info('Logged in.');
     process.exit(0);
-  } catch(e) {
+  } catch(error) {
     if (options.verbose) {
-      console.error(e);
+      console.error(error.message);
     }
-    console.error('Login failed');
+
+    console.error('Login failed.');
     process.exit(1);
   }
 })();

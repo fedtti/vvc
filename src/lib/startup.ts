@@ -1,4 +1,4 @@
-import semver from 'semver';
+import { lt } from 'semver';
 
 import { read as readConfig, meta } from './config';
 import { ws } from './ws';
@@ -14,7 +14,7 @@ export async function checkLoginAndVersion() {
       throw err;
     }
   });
-  if (info.minVersion && semver.lt(meta.version, info.minVersion)) {
+  if (!!info.minVersion && lt(meta.version, info.minVersion)) {
     throw `Incompatible CLI version: please upgrade the Vivocha CLI to version ${info.minVersion} at least`;
   }
   config.info = info;

@@ -1,7 +1,7 @@
 import { MultiLanguageString } from '@vivocha/public-entities/dist/language';
-import { Eredita } from 'eredita';
+import { Eredita } from 'eredita'; // TODO: fork
 import { readFileSync } from 'fs';
-import * as _ from 'lodash';
+import _ from 'lodash';
 import { promisify } from 'util';
 import { ws } from './ws';
 
