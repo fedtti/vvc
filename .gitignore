@@ -28,7 +28,6 @@ build/Release
 
 # Dependency directories
 node_modules
-jspm_packages
 
 # Optional npm cache directory
 .npm
@@ -36,13 +35,8 @@ jspm_packages
 # Optional REPL history
 .node_repl_history
 
-#TypeScript typings/definitions
-typings
-
-
-dist
 app/index.d.ts
 app/index.js
 app/index.js.map
-app/sass.worker.js
 app/vivocha_widget_tester.js
+dist/
