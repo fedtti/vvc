@@ -2,8 +2,33 @@
   "name": "vvc",
   "version": "10.0.0-alpha.1",
   "description": "Vivocha Command Line Tools",
+  "keywords": [
+    "vivocha",
+    "cli",
+    "command-line",
+    "tools",
+    "engagement"
+  ],
+  "homepage": "https://github.com/vivocha/vvc#readme",
+    "bugs": {
+    "url": "https://github.com/vivocha/vvc/issues"
+  },
+  "license": "MIT",
+  "author": "Federico Pinna <fpinna@vivocha.com> (https://www.vivocha.com/)",
+  "contributors": [
+    "Federico Moretti <fmoretti@vivocha.com> (https://www.vivocha.com/)"
+  ],
+  "files": [
+    "dist/**/*.js",
+    "dist/**/*.ts",
+    "app/bg.png",
+    "app/index.html",
+    "app/vivocha_widget_tester.js",
+    "app/sass.worker.js",
+    "README.md",
+    "LICENSE"
+  ],
   "main": "dist/index.js",
-  "typings": "dist/index.d.ts",
   "bin": {
     "vvc": "./dist/vvc.js",
     "vvc-info": "./dist/vvc-info.js",
@@ -11,6 +36,10 @@
     "vvc-logout": "./dist/vvc-logout.js",
     "vvc-widget": "./dist/vvc-widget.js",
     "vvc-strings": "./dist/vvc-strings.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/vivocha/vvc.git"
   },
   "scripts": {
     "clean": "rm -fr dist/ coverage .nyc_output node_modules/ app/vivocha_widget_tester.js",
@@ -23,36 +52,6 @@
     "cover": "nyc --reporter=lcov --reporter=text npm t",
     "semantic-release": "semantic-release pre && npm publish && semantic-release post"
   },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/vivocha/vvc.git"
-  },
-  "keywords": [
-    "vivocha",
-    "chat",
-    "widget",
-    "engagement",
-    "development"
-  ],
-  "files": [
-    "dist/**/*.js",
-    "dist/**/*.ts",
-    "app/bg.png",
-    "app/index.html",
-    "app/vivocha_widget_tester.js",
-    "app/sass.worker.js",
-    "README.md",
-    "LICENSE"
-  ],
-  "author": "Federico Pinna <fpinna@vivocha.com> (https://www.vivocha.com/)",
-  "contributors": [
-    "Federico Moretti <fmoretti@vivocha.com> (https://www.vivocha.com/)"
-  ],
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/vivocha/vvc/issues"
-  },
-  "homepage": "https://github.com/vivocha/vvc#readme",
   "dependencies": {
     "@inquirer/prompts": "^7.5.3",
     "@vivocha/public-entities": "^8.4.7",
