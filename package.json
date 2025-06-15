@@ -10,7 +10,7 @@
     "engagement"
   ],
   "homepage": "https://github.com/vivocha/vvc#readme",
-    "bugs": {
+  "bugs": {
     "url": "https://github.com/vivocha/vvc/issues"
   },
   "license": "MIT",
@@ -75,6 +75,7 @@
     "@types/lodash": "^4.17.17",
     "@types/mocha": "^10.0.10",
     "@types/node": "^22.15.31",
+    "@types/reload": "^3.2.3",
     "@types/request": "^2.48.12",
     "@types/semver": "^7.7.0",
     "chai": "4.2.0",
