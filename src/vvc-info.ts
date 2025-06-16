@@ -19,7 +19,7 @@ import { checkLoginAndVersion } from './lib/startup.js';
     await checkLoginAndVersion();
     const config: Config = await readConfig();
 
-    console.log(`Currently logged in to account ${config.acct_id} on world ${config.server}.`);
+    console.log(`Currently logged in to account ${config.accountId} on world ${config.server}.`);
 
     if (options.verbose) {
       console.log(`Server info: ${JSON.stringify(config.info, null, 2)}`);

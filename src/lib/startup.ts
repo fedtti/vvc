@@ -1,12 +1,12 @@
 import { lt } from 'semver';
+import { meta, outerRead as readConfig } from './config.js';
+import { ws } from './ws.js';
 
-import { read as readConfig, meta } from './config';
-import { ws } from './ws';
-
-export async function checkLoginAndVersion() {
+export const checkLoginAndVersion = async (): Promise<any> => {
   const config = await readConfig().catch(err => {
     throw 'Config file not found, perform a login to create it';
   });
+
   const info = await ws('reflect/cli').catch(err => {
     if (err.response && err.response.statusCode === 401) {
       throw 'Not logged in';
@@ -14,8 +14,10 @@ export async function checkLoginAndVersion() {
       throw err;
     }
   });
+
   if (!!info.minVersion && lt(meta.version, info.minVersion)) {
     throw `Incompatible CLI version: please upgrade the Vivocha CLI to version ${info.minVersion} at least`;
   }
+
   config.info = info;
 }

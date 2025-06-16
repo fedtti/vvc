@@ -1,9 +1,9 @@
-import { MultiLanguageString } from '@vivocha/public-entities/dist/language';
 import { Eredita } from 'eredita'; // TODO: fork
 import { readFileSync } from 'fs';
 import _ from 'lodash';
 import { promisify } from 'util';
-import { ws } from './ws';
+import { MultiLanguageString } from '@vivocha/public-entities/dist/language.js';
+import { ws } from './ws.js';
 
 const PO = require('pofile');
 const poload = promisify(PO.load);

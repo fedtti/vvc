@@ -3,9 +3,9 @@
 import { Command } from 'commander';
 import { input, password } from '@inquirer/prompts';
 
-import { Config, meta, read as readConfig, unlink as unlinkConfig, write as writeConfig } from './lib/config';
-import { checkLoginAndVersion } from './lib/startup';
-import { ws } from './lib/ws';
+import { Config, meta, outerRead as readConfig, unlink as unlinkConfig, write as writeConfig } from './lib/config.js';
+import { checkLoginAndVersion } from './lib/startup.js';
+import { ws } from './lib/ws.js';
 
 const program = new Command();
 const options = program.opts();
@@ -39,7 +39,7 @@ const checkAccountId = async (account: string): Promise<boolean> => {
 
     const config: Config = await readConfig();
     
-    await ws(`clients/${config.user_id}`, { method: 'DELETE' });
+    await ws(`clients/${config.userId}`, { method: 'DELETE' });
     
     await unlinkConfig();
 
@@ -62,7 +62,7 @@ const checkAccountId = async (account: string): Promise<boolean> => {
       message: 'Password'
     });
     
-    // const client: any = await new Promise((resolve, reject) => {
+    const client: any = await new Promise((resolve, reject) => {
     //   request({
     //     url: `https://${server}/a/${accountId}/api/v3/client`,
     //     method: 'POST',
@@ -85,12 +85,12 @@ const checkAccountId = async (account: string): Promise<boolean> => {
     //       resolve(data);
     //     }
     //   });
-    // });
+     });
 
     const config: Config = await readConfig().catch(() => { return {} as Config });
 
-    config.acct_id = accountId;
-    config.user_id = client.id;
+    config.accountId = accountId;
+    config.userId = client.id;
     config.secret = client.secret;
 
     await writeConfig(config);

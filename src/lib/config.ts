@@ -4,6 +4,7 @@ export interface Config {
   accountId: string;
   userId: string;
   secret: string;
+  server?: string;
   info: any;
 }
 

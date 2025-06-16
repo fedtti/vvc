@@ -3,9 +3,9 @@ import * as crypto from 'crypto';
 import * as fs from 'fs';
 import * as path from 'path';
 import { promisify } from 'util';
-import { Config, read as readConfig } from './config';
-import walkdir from './walkdir';
-import { download, ws } from './ws';
+import { Config, outerRead as readConfig } from './config.js';
+import walkdir from './walkdir.js';
+import { download, ws } from './ws.js';
 
 const stat = promisify(fs.stat);
 const access = promisify(fs.access);
