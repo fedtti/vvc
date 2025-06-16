@@ -2,7 +2,7 @@
 
 import { Command } from 'commander';
 
-import { Config, meta, read as readConfig } from './lib/config'; // TODO: Rename to 'Meta' and 'Read'.
+import { type Config, meta, outerRead as readConfig } from './lib/config';
 
 import { checkLoginAndVersion } from './lib/startup';
 

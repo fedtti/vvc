@@ -29,11 +29,11 @@
   "main": "./dist/index.js",
   "bin": {
     "vvc": "./dist/vvc.js",
-    "vvc-login": "./dist/vvc-login.js",
     "vvc-info": "./dist/vvc-info.js",
+    "vvc-login": "./dist/vvc-login.js",
     "vvc-logout": "./dist/vvc-logout.js",
-    "vvc-widget": "./dist/vvc-widget.js",
-    "vvc-strings": "./dist/vvc-strings.js"
+    "vvc-strings": "./dist/vvc-strings.js",
+    "vvc-widget": "./dist/vvc-widget.js"
   },
   "repository": {
     "type": "git",
