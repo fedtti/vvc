@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 
-import { Asset, MultiLanguageString, WidgetManifest } from '@vivocha/public-entities';
-import { getStringsObject } from '@vivocha/public-entities/dist/wrappers/language';
+import type { Asset, MultiLanguageString, WidgetManifest } from '@vivocha/public-entities';
+import { getStringsObject } from '@vivocha/public-entities/dist/wrappers/language.js';
+
 import { Scopes } from 'arrest';
 import * as bodyParser from 'body-parser';
 import * as columnify from 'columnify';
@@ -12,18 +13,18 @@ import express from 'express';
 
 import fs from 'fs/promises';
 import * as http from 'http';
-import * as jsonpolice from 'jsonpolice';
+import jsonpolice from 'jsonpolice';
 import _ from 'lodash';
 import { open as openurl } from 'openurl';
 import * as path from 'path';
-import * as reload from 'reload';
-import { downloadAssets, hashWidgetAssets, scanWidgetAssets, uploadWidgetAssetChanges } from './lib/assets';
-import { Config, meta, read as readConfig } from './lib/config';
-import { checkLoginAndVersion } from './lib/startup';
-import { fetchStrings, fetchWidgetStrings, uploadWidgetStringChanges } from './lib/strings';
-import { retriever, ws, wsUrl } from './lib/ws';
+import reload from 'reload';
+import { downloadAssets, hashWidgetAssets, scanWidgetAssets, uploadWidgetAssetChanges } from './lib/assets.js';
+import { type Config, meta, read as readConfig } from './lib/config.js';
+import { checkLoginAndVersion } from './lib/startup.js';
+import { fetchStrings, fetchWidgetStrings, uploadWidgetStringChanges } from './lib/strings.js';
+import { retriever, ws, wsUrl } from './lib/ws.js';
 
-(async () => {
+(async (): Promise<void> => {
   try {
     const program = new Command();
     const options = program.opts();
@@ -137,7 +138,7 @@ import { retriever, ws, wsUrl } from './lib/ws';
             }
 
             // check if manifest.json exists
-            await access('./manifest.json', fs.constants.R_OK | fs.constants.W_OK).catch(() => {
+            await fs.access('./manifest.json', fs.constants.R_OK | fs.constants.W_OK).catch(() => {
               throw "manifest.json not found";
             });
 
@@ -165,7 +166,7 @@ import { retriever, ws, wsUrl } from './lib/ws';
             });
 
             // check if strings.json exists
-            await access('./strings.json', fs.constants.R_OK).catch(() => {
+            await fs.access('./strings.json', fs.constants.R_OK).catch(() => {
               throw "strings.json not found";
             });
 
@@ -280,7 +281,7 @@ import { retriever, ws, wsUrl } from './lib/ws';
             }
 
             // update local manifest
-            fs.writeFileSync('./manifest.json', JSON.stringify(manifest, null, 2));
+            fs.writeFile('./manifest.json', JSON.stringify(manifest, null, 2));
           } catch(e) {
             console.error(e);
             exitCode = 1;
@@ -318,12 +319,12 @@ import { retriever, ws, wsUrl } from './lib/ws';
 
             // check that the destination dir does not exist
             const widgetDir = options.directory || `./${curr_widget_id}`;
-            await access(widgetDir).then(() => {
+            await fs.access(widgetDir).then(() => {
               throw 'Destination path already exists';
             }, () => {});
 
-            // create the destination dir and move into it
-            await fs.mkdir(widgetDir, { recursive: true }, () => {
+            // create the destination dir and move into it | TODO: try / catch
+            await fs.mkdir(widgetDir, { recursive: true }).catch(() => {
               throw `Cannot create directory ${widgetDir}`;
             });
             process.chdir(widgetDir);
@@ -333,14 +334,14 @@ import { retriever, ws, wsUrl } from './lib/ws';
             const strings = await fetchWidgetStrings(widget_id, options.global).catch(() => {
               throw 'Failed to download the strings';
             });
-            await writeFile('./strings.json', JSON.stringify(strings, null, 2), 'utf8').catch(() => {
+            await fs.writeFile('./strings.json', JSON.stringify(strings, null, 2), 'utf8').catch(() => {
               throw 'Failed to write the strings';
             });
 
             await downloadAssets(manifest.assets);
 
             // write the manifest
-            await writeFile('./manifest.json', JSON.stringify(manifest, null, 2), 'utf8').catch(() => {
+            await fs.writeFile('./manifest.json', JSON.stringify(manifest, null, 2), 'utf8').catch(() => {
               throw 'Failed to write the manifest';
             });
 
@@ -398,7 +399,7 @@ import { retriever, ws, wsUrl } from './lib/ws';
             }
 
             // check if manifest.json exists
-            await access('./manifest.json', fs.constants.R_OK | fs.constants.W_OK).catch(() => {
+            await fs.access('./manifest.json', fs.constants.R_OK | fs.constants.W_OK).catch(() => {
               throw "manifest.json not found";
             });
 
@@ -537,7 +538,7 @@ import { retriever, ws, wsUrl } from './lib/ws';
 
             if (options.watch) {
               fs.watch(startDir, (event, filename) => {
-                reloader.reload();
+                reloader;
               });
             }
 

@@ -1,9 +1,7 @@
 #!/usr/bin/env node
 
 import { Command } from 'commander';
-
-import { type Config, meta, outerRead as readConfig } from './lib/config.js';
-
+import { type Config, meta, read as readConfig } from './lib/config.js';
 import { checkLoginAndVersion } from './lib/startup.js';
 
 (async () => {

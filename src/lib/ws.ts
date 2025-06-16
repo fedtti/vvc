@@ -1,6 +1,5 @@
-import * as fs from 'fs';
-import * as request from 'request';
-import { read as readConfig } from './config';
+import fs from 'fs';
+import { read as readConfig } from './config.js';
 
 export class RequestError extends Error {
   constructor(public originalError: any, public response: any, public body: any) {
@@ -12,11 +11,11 @@ export async function ws(path: string, opts?: any, okStatusCodes: number[] = [ 2
   const config = await readConfig();
   const url = await wsUrl(path);
   return new Promise((resolve, reject) => {
-    request(Object.assign({
+    request(Object.assign({ // TODO: Replace with fetch().
       method: 'GET',
       url,
       auth: {
-        user: config.user_id,
+        user: config.userId,
         pass: config.secret,
         sendImmediately: true
       },
@@ -33,12 +32,12 @@ export async function ws(path: string, opts?: any, okStatusCodes: number[] = [ 2
 
 export async function wsUrl(path: string): Promise<string> {
   const config = await readConfig();
-  return `https://${config.server}/a/${config.acct_id}/api/v2/${path}`;
+  return `https://${config.server}/a/${config.accountId}/api/v2/${path}`;
 }
 
 export async function retriever(url: string): Promise<any> {
   return new Promise(function(resolve, reject) {
-    request({
+    request({ // TODO: replace with fetch().
       url: url,
       method: 'GET',
       json: true

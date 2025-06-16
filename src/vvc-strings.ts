@@ -1,16 +1,16 @@
 #!/usr/bin/env node
 
-import { MultiLanguageString } from '@vivocha/public-entities';
+import type { MultiLanguageString } from '@vivocha/public-entities';
 import { Scopes } from 'arrest';
 import { Command } from 'commander';
 import * as fs from 'fs';
 import * as jsonpolice from 'jsonpolice';
 import { parse as parsePath } from 'path';
 import { promisify } from 'util';
-import { Config, meta, read as readConfig } from './lib/config';
-import { checkLoginAndVersion } from './lib/startup';
-import { exportPOFiles, fetchStrings, importPOFiles, uploadStringChanges } from './lib/strings';
-import { retriever, wsUrl } from './lib/ws';
+import { type Config, meta, read as readConfig } from './lib/config.js';
+import { checkLoginAndVersion } from './lib/startup.js';
+import { exportPOFiles, fetchStrings, importPOFiles, uploadStringChanges } from './lib/strings.js';
+import { retriever, wsUrl } from './lib/ws.js';
 
 const access = promisify(fs.access);
 
@@ -44,7 +44,7 @@ const access = promisify(fs.access);
               "type": "array",
               "items": {"$ref": schemaUrl},
               "minItems": 2
-            }, {retriever});
+            }, { retriever });
 
             for (let f of files) {
               await access(f, fs.constants.R_OK).catch(() => {

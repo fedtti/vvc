@@ -3,7 +3,7 @@
 import { Command } from 'commander';
 import { input, password } from '@inquirer/prompts';
 
-import { Config, meta, outerRead as readConfig, unlink as unlinkConfig, write as writeConfig } from './lib/config.js';
+import { Config, meta, read as readConfig, unlink as unlinkConfig, write as writeConfig } from './lib/config.js';
 import { checkLoginAndVersion } from './lib/startup.js';
 import { ws } from './lib/ws.js';
 

@@ -14,7 +14,7 @@ interface ErrorCode extends Error {
 
 /**
  * 
- * @returns {string} - The home directory path for the current user.
+ * @returns {string} - The path to the home directory of the current user.
  */
 const getHomeDir = (): string => {
 	const user: string = process.env.LOGNAME || process.env.USER || process.env.LNAME || process.env.USERNAME;
@@ -53,7 +53,7 @@ const innerRead = async (): Promise<Config> => {
 /*
  *
  */
-export const outerRead = async (force: boolean = false): Promise<Config> => {
+export const read = async (force: boolean = false): Promise<Config> => {
   if (!config || !!force) {
     config = innerRead();
   }
@@ -62,8 +62,8 @@ export const outerRead = async (force: boolean = false): Promise<Config> => {
 
 /**
  * 
- * @param newConfig 
- * @returns 
+ * @param {Config} newConfig - The new configuration object to write.
+ * @returns {Promise<Config>} - A promise that resolves to the new configuration object.
  */
 export const write = async (newConfig: Config): Promise<Config> => {
   try {

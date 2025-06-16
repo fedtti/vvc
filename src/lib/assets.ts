@@ -1,10 +1,10 @@
-import { Asset } from '@vivocha/public-entities';
+import type { Asset } from '@vivocha/public-entities';
 import * as crypto from 'crypto';
 import * as fs from 'fs';
 import * as path from 'path';
 import { promisify } from 'util';
-import { type Config, outerRead as readConfig } from './config.js';
-import walkdir from './walkdir.js';
+import { type Config, read as readConfig } from './config.js';
+import { listFiles } from './walkdir.js';
 import { download, ws } from './ws.js';
 
 const stat = promisify(fs.stat);
@@ -47,7 +47,7 @@ export async function scanWidgetAssets(basepath: string): Promise<Asset[]> {
   const assetsPath: string = `${basepath}/assets`;
 
   try {
-    assets.push(... (await walkdir(assetsPath)).map(f => f.replace(/^\.\//, '')).map(f => checkAsset(f)));
+    assets.push(... (await listFiles(assetsPath)).map(f => f.replace(/^\.\//, '')).map(f => checkAsset(f)));
   } catch(e) { }
   return Promise.all(assets);
 }

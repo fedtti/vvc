@@ -1,15 +1,14 @@
 #!/usr/bin/env node
 
 import { Command } from 'commander';
-
-import { meta } from './lib/config'; // TODO: Rename to 'Meta'.
+import { meta } from './lib/config.js';
 
 const program = new Command();
 
 program
   .name(meta.name)
-  .description(meta.description)
-  .version(meta.version);
+  .version(meta.version)
+  .description(meta.description);
 
 program
   .command('login', 'Login to your Vivocha account')

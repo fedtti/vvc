@@ -26,7 +26,8 @@
     "LICENSE",
     "README.md"
   ],
-  "main": "./dist/index.js",
+  "type": "module",
+  "exports": "./dist/index.js",
   "bin": {
     "vvc": "./dist/vvc.js",
     "vvc-info": "./dist/vvc-info.js",
@@ -88,6 +89,5 @@
     "sass": "^1.89.2",
     "semantic-release": "^24.2.5",
     "typescript": "^5.8.3"
-  },
-  "type": "module"
+  }
 }

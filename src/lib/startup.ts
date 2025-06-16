@@ -1,7 +1,10 @@
 import { lt } from 'semver';
-import { meta, outerRead as readConfig } from './config.js';
+import { meta, read as readConfig } from './config.js';
 import { ws } from './ws.js';
 
+/**
+ * 
+ */
 export const checkLoginAndVersion = async (): Promise<any> => {
   const config = await readConfig().catch(err => {
     throw 'Config file not found, perform a login to create it';
