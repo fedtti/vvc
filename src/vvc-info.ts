@@ -2,9 +2,9 @@
 
 import { Command } from 'commander';
 
-import { type Config, meta, outerRead as readConfig } from './lib/config';
+import { type Config, meta, outerRead as readConfig } from './lib/config.js';
 
-import { checkLoginAndVersion } from './lib/startup';
+import { checkLoginAndVersion } from './lib/startup.js';
 
 (async () => {
   const program = new Command();

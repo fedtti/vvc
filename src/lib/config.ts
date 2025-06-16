@@ -1,5 +1,4 @@
 import fs from 'fs/promises';
-import _ from 'lodash';
 
 export interface Config {
   accountId: string;
@@ -42,7 +41,7 @@ export const outerRead = async (force: boolean = false): Promise<Config> => {
   return config;
 };
 
-export async function write(newConfig:Config): Promise<Config> {
+export const write = async (newConfig: Config): Promise<Config> => {
   try {
     const stat = await fs.stat(_config_file_dir);
     if (!stat.isDirectory()) {
@@ -57,10 +56,10 @@ export async function write(newConfig:Config): Promise<Config> {
     await fs.mkdir(_config_file_dir);
   }
 
-  await fs.writeFile(_config_file_path, JSON.stringify(_.omit(newConfig, [ 'info']), null , 2));
+  await fs.writeFile(_config_file_path, JSON.stringify((({ info, ...array }) => array)(newConfig)));
   return config = Promise.resolve(newConfig);
-}
+};
 
 export const unlink = (): Promise<any> => {
   return fs.unlink(_config_file_path);
-}
+};
