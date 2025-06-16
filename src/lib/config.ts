@@ -60,6 +60,11 @@ export const outerRead = async (force: boolean = false): Promise<Config> => {
   return config;
 };
 
+/**
+ * 
+ * @param newConfig 
+ * @returns 
+ */
 export const write = async (newConfig: Config): Promise<Config> => {
   try {
     const stat = await fs.stat(configFileDir);
@@ -79,6 +84,10 @@ export const write = async (newConfig: Config): Promise<Config> => {
   return config = Promise.resolve(newConfig);
 };
 
+/**
+ * 
+ * @returns 
+ */
 export const unlink = (): Promise<any> => {
   return fs.unlink(configFilePath);
 };

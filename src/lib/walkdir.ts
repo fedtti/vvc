@@ -1,14 +1,16 @@
-import { promisify } from 'util';
-import * as fs from 'fs';
+import fs from 'fs/promises';
 
-const readdir = promisify(fs.readdir) as (path: string, options?) => Promise<string[]>;
-const stat = promisify(fs.stat) as (path: string) => Promise<fs.Stats>;
-
+/**
+ * Recursively lists all files in a directory.
+ * 
+ * @param {string} path - The path to the directory or file.
+ * @returns {Promise<string[]>} - A promise that resolves to an array of file paths.
+ */
 export default async function listFiles(path: string): Promise<string[]> {
   const out: string[] = [];
-  let s = await stat(path);
+  let s = await fs.stat(path);
   if (s.isDirectory()) {
-    const files: string[] = (await readdir(path) || []).filter(f => f[0] !== '.').map(f => `${path}/${f}`);
+    const files: string[] = (await fs.readdir(path) || []).filter(f => f[0] !== '.').map(f => `${path}/${f}`);
     for (let f of files) {
       out.push(...await listFiles(f));
     }

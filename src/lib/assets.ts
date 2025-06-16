@@ -3,7 +3,7 @@ import * as crypto from 'crypto';
 import * as fs from 'fs';
 import * as path from 'path';
 import { promisify } from 'util';
-import { Config, outerRead as readConfig } from './config.js';
+import { type Config, outerRead as readConfig } from './config.js';
 import walkdir from './walkdir.js';
 import { download, ws } from './ws.js';
 

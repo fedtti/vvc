@@ -2,7 +2,7 @@ import { Eredita } from 'eredita'; // TODO: fork
 import { readFileSync } from 'fs';
 import _ from 'lodash';
 import { promisify } from 'util';
-import { MultiLanguageString } from '@vivocha/public-entities/dist/language.js';
+import type { MultiLanguageString } from '@vivocha/public-entities/dist/language.js';
 import { ws } from './ws.js';
 
 const PO = require('pofile');
