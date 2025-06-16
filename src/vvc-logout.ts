@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 
 import { Command } from 'commander';
-import { Config, meta, read as readConfig, unlink as unlinkConfig } from './lib/config';
-import { checkLoginAndVersion } from './lib/startup';
-import { ws } from './lib/ws';
+import { type Config, meta, read as readConfig, unlink as unlinkConfig } from './lib/config.js';
+import { checkLoginAndVvcVersion } from './lib/startup.js';
+import { ws } from './lib/ws.js';
 
 (async () => {
   const program = new Command();
@@ -15,9 +15,9 @@ import { ws } from './lib/ws';
       .option('-v, --verbose', 'Verbose output')
       .parse(process.argv);
   
-    await checkLoginAndVersion();
+    await checkLoginAndVvcVersion();
     const config: Config = await readConfig();
-    await ws(`clients/${config.user_id}`, { method: 'DELETE' });
+    await ws(`clients/${config.userId}`, { method: 'DELETE' });
     await unlinkConfig();
     console.log('Logged out');
     process.exit(0);

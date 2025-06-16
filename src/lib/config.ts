@@ -53,6 +53,7 @@ const innerRead = async (): Promise<Config> => {
 
 /**
  * Reads the configuration from the existing configuration file.
+ * @param {boolean} [force=false] - If true, forces a re-read of the configuration file.
  * @returns {Promise<Config>} - A promise that resolves to the configuration object.
  */
 export const read = async (force: boolean = false): Promise<Config> => {
