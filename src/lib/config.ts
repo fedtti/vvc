@@ -13,7 +13,7 @@ interface ErrorCode extends Error {
 }
 
 /**
- * 
+ * Gets the home directory of the current user based on their operating system.
  * @returns {string} - The path to the home directory of the current user.
  */
 const getHomeDir = (): string => {
@@ -35,23 +35,25 @@ const getHomeDir = (): string => {
   return homeDir;
 };
 
-export const meta: any = await import(`${__dirname}/../../package.json`, { with: { type: 'json' } });
+export const meta: any = await import(`${__dirname}/../../package.json`, { with: { type: 'json' } }); // Import package metadata to get version and other details.
 
 const configFileDir: string = `${getHomeDir()}/.vvc`;
 const configFilePath: string = `${configFileDir}/config.json`;
 
 let config: Promise<Config>;
 
-/*
- *
+/**
+ * Reads the configuration from the configuration file.
+ * @returns {Promise<Config>} - A promise that resolves to the configuration object.
  */
 const innerRead = async (): Promise<Config> => {
   const data = await fs.readFile(configFilePath, { encoding: 'utf8' });
   return JSON.parse(data.toString());
 };
 
-/*
- *
+/**
+ * Reads the configuration from the existing configuration file.
+ * @returns {Promise<Config>} - A promise that resolves to the configuration object.
  */
 export const read = async (force: boolean = false): Promise<Config> => {
   if (!config || !!force) {
@@ -61,14 +63,13 @@ export const read = async (force: boolean = false): Promise<Config> => {
 };
 
 /**
- * 
+ * Writes a new configuration to the configuration file.
  * @param {Config} newConfig - The new configuration object to write.
  * @returns {Promise<Config>} - A promise that resolves to the new configuration object.
  */
 export const write = async (newConfig: Config): Promise<Config> => {
   try {
     const stat = await fs.stat(configFileDir);
-
     if (!stat.isDirectory()) {
       const error: ErrorCode = new Error(`${configFileDir} is not a directory.`);
       error.code = 'ENOTDIR';
@@ -78,17 +79,15 @@ export const write = async (newConfig: Config): Promise<Config> => {
     if (error.code !== 'ENOENT') {
       throw error;
     }
-  
     await fs.mkdir(configFileDir);
   }
-
   await fs.writeFile(configFilePath, JSON.stringify((({ info, ...keys }) => keys)(newConfig)));
   return config = Promise.resolve(newConfig);
 };
 
 /**
- * 
- * @returns {} Promise<void> - A promise that resolves when the configuration file is successfully deleted.
+ * Deletes the existing configuration file.
+ * @returns {Promise<void>} - A promise that resolves when the configuration file is successfully deleted.
  */
 export const unlink = (): Promise<void> => {
   return fs.unlink(configFilePath);
