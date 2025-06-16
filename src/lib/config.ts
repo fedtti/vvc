@@ -1,10 +1,10 @@
 import fs from 'fs/promises';
 
 export interface Config {
+  server: string;
   accountId: string;
   userId: string;
   secret: string;
-  server?: string;
   info: any;
 }
 
@@ -26,7 +26,7 @@ const getHomeDir = (): string => {
     case 'darwin':
 		  homeDir = process.env.HOME || (!!user ? `/Users/${user}` : null);
       break;
-      case 'linux':
+    case 'linux':
 		  homeDir = process.env.HOME || (process.getuid() === 0 ? '/root' : (!!user ? `/home/${user}` : null));
       break;
     default:
@@ -35,7 +35,7 @@ const getHomeDir = (): string => {
   return homeDir;
 };
 
-export const meta = await import(`${__dirname}/../../package.json`, { with: { type: 'json' } }); //
+export const meta: any = await import(`${__dirname}/../../package.json`, { with: { type: 'json' } });
 
 const configFileDir: string = `${getHomeDir()}/.vvc`;
 const configFilePath: string = `${configFileDir}/config.json`;
@@ -68,8 +68,9 @@ export const read = async (force: boolean = false): Promise<Config> => {
 export const write = async (newConfig: Config): Promise<Config> => {
   try {
     const stat = await fs.stat(configFileDir);
+
     if (!stat.isDirectory()) {
-      let error: ErrorCode = new Error(`${configFileDir} is not a directory.`);
+      const error: ErrorCode = new Error(`${configFileDir} is not a directory.`);
       error.code = 'ENOTDIR';
       throw error;
     }
@@ -77,6 +78,7 @@ export const write = async (newConfig: Config): Promise<Config> => {
     if (error.code !== 'ENOENT') {
       throw error;
     }
+  
     await fs.mkdir(configFileDir);
   }
 
@@ -86,8 +88,8 @@ export const write = async (newConfig: Config): Promise<Config> => {
 
 /**
  * 
- * @returns 
+ * @returns {} Promise<void> - A promise that resolves when the configuration file is successfully deleted.
  */
-export const unlink = (): Promise<any> => {
+export const unlink = (): Promise<void> => {
   return fs.unlink(configFilePath);
 };

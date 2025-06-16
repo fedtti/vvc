@@ -3,8 +3,8 @@
 import { Command } from 'commander';
 import { input, password } from '@inquirer/prompts';
 
-import { Config, meta, read as readConfig, unlink as unlinkConfig, write as writeConfig } from './lib/config.js';
-import { checkLoginAndVersion } from './lib/startup.js';
+import { type Config, meta, read as readConfig, unlink as unlinkConfig, write as writeConfig } from './lib/config.js';
+import { checkLoginAndVvcVersion } from './lib/startup.js';
 import { ws } from './lib/ws.js';
 
 const program = new Command();
@@ -35,7 +35,7 @@ const checkAccountId = async (account: string): Promise<boolean> => {
 
 (async (): Promise<void> => {
   try {
-    await checkLoginAndVersion();
+    await checkLoginAndVvcVersion();
 
     const config: Config = await readConfig();
     
@@ -61,34 +61,52 @@ const checkAccountId = async (account: string): Promise<boolean> => {
     const userPassword: string = await password({
       message: 'Password'
     });
+
+    const server: string = options.server || await new Promise<string>((resolve, reject) => {
+      request({ // TODO: Replace with fetch().
+        url: `https://www.vivocha.com/a/${data.acct_id}/api/v2/swagger.json`,
+        method: 'HEAD',
+        followRedirect: false
+      }, function(err, res, data) {
+        if (err) {
+          reject(err);
+        } else if (res.statusCode !== 302 || !res.headers.location) {
+          reject(new Error('invalid account'));
+        } else {
+          let u = new URL(Array.isArray(res.headers.location) ? res.headers.location[0] as string: res.headers.location as string);
+          resolve(u.host);
+        }
+      });
+    });
     
     const client: any = await new Promise((resolve, reject) => {
-    //   request({
-    //     url: `https://${server}/a/${accountId}/api/v3/client`,
-    //     method: 'POST',
-    //     json: true,
-    //     body: {
-    //       scope: [ 'Widget.*', 'Asset.*', 'String.*', 'Reflect.cli', 'Client.remove' ],
-    //       user_id: userId
-    //     },
-    //     auth: {
-    //       user: userId,
-    //       pass: userPassword,
-    //       sendImmediately: true
-    //     }
-    //   }, function(err, res, data) {
-    //     if (err) {
-    //       reject(err);
-    //     } else if (res.statusCode !== 201) {
-    //       reject(new Error('login failed'));
-    //     } else {
-    //       resolve(data);
-    //     }
-    //   });
+    request({ // TODO: Replace with fetch().
+        url: `https://${server}/a/${accountId}/api/v3/client`,
+        method: 'POST',
+        json: true,
+        body: {
+          scope: [ 'Widget.*', 'Asset.*', 'String.*', 'Reflect.cli', 'Client.remove' ],
+          user_id: userId
+        },
+        auth: {
+          user: userId,
+          pass: userPassword,
+          sendImmediately: true
+        }
+      }, function(err, res, data) {
+        if (err) {
+          reject(err);
+        } else if (res.statusCode !== 201) {
+          reject(new Error('login failed'));
+        } else {
+          resolve(data);
+        }
+      });
      });
 
     const config: Config = await readConfig().catch(() => { return {} as Config });
 
+    config.server = server || 'www.vivocha.com';
     config.accountId = accountId;
     config.userId = client.id;
     config.secret = client.secret;

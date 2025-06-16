@@ -32,7 +32,7 @@ export async function ws(path: string, opts?: any, okStatusCodes: number[] = [ 2
 
 export async function wsUrl(path: string): Promise<string> {
   const config = await readConfig();
-  return `https://${config.server}/a/${config.accountId}/api/v2/${path}`;
+  return `https://${config.server}/a/${config.accountId}/api/v3/${path}`;
 }
 
 export async function retriever(url: string): Promise<any> {

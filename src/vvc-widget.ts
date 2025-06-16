@@ -20,7 +20,7 @@ import * as path from 'path';
 import reload from 'reload';
 import { downloadAssets, hashWidgetAssets, scanWidgetAssets, uploadWidgetAssetChanges } from './lib/assets.js';
 import { type Config, meta, read as readConfig } from './lib/config.js';
-import { checkLoginAndVersion } from './lib/startup.js';
+import { checkLoginAndVvcVersion } from './lib/startup.js';
 import { fetchStrings, fetchWidgetStrings, uploadWidgetStringChanges } from './lib/strings.js';
 import { retriever, ws, wsUrl } from './lib/ws.js';
 
@@ -29,7 +29,7 @@ import { retriever, ws, wsUrl } from './lib/ws.js';
     const program = new Command();
     const options = program.opts();
 
-    await checkLoginAndVersion();
+    await checkLoginAndVvcVersion();
     const config: Config = await readConfig();
 
     program

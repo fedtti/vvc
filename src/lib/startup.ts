@@ -5,7 +5,7 @@ import { ws } from './ws.js';
 /**
  * 
  */
-export const checkLoginAndVersion = async (): Promise<any> => {
+export const checkLoginAndVvcVersion = async (): Promise<any> => {
   const config = await readConfig().catch(err => {
     throw 'Config file not found, perform a login to create it';
   });
