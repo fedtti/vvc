@@ -5,7 +5,7 @@ export interface Config {
   accountId: string;
   userId: string;
   secret: string;
-  info: any;
+  info: any; // TODO: Define a more specific type for the server info.
 }
 
 interface ErrorCode extends Error {
@@ -13,8 +13,8 @@ interface ErrorCode extends Error {
 }
 
 /**
- * Gets the home directory of the current user based on their operating system.
- * @returns {string} - The path to the home directory of the current user.
+ * Get the home directory of the current user based on their operating system.
+ * @returns {string} - Path to the home directory of the current user.
  */
 const getHomeDir = (): string => {
 	const user: string = process.env.LOGNAME || process.env.USER || process.env.LNAME || process.env.USERNAME;
@@ -35,7 +35,7 @@ const getHomeDir = (): string => {
   return homeDir;
 };
 
-export const meta: any = await import(`${__dirname}/../../package.json`, { with: { type: 'json' } }); // Import package metadata to get version and other details.
+export const meta: any = await import(`${__dirname}/../../package.json`, { with: { type: 'json' } }); // Import package metadata to get its version and other details.
 
 const configFileDir: string = `${getHomeDir()}/.vvc`;
 const configFilePath: string = `${configFileDir}/config.json`;
