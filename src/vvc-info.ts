@@ -4,7 +4,7 @@ import { Command } from 'commander';
 import { type Config, meta, read as readConfig } from './lib/config.js';
 import { checkLoginAndVvcVersion } from './lib/startup.js';
 
-(async () => {
+(async (): Promise<void> => {
   const program = new Command();
   const options = program.opts();
 
@@ -17,12 +17,11 @@ import { checkLoginAndVvcVersion } from './lib/startup.js';
     await checkLoginAndVvcVersion();
     const config: Config = await readConfig();
 
-    console.log(`Currently logged in to account ${config.accountId} on world ${config.server}.`);
+    console.info(`Currently logged in to account ${config.accountId} on world ${config.server}.`);
 
     if (options.verbose) {
       console.log(`Server info: ${JSON.stringify(config.info, null, 2)}`);
     }
-
     process.exit(0);
   } catch (error) {
     if (error === 'Not logged in' || error.toString().match(/^Config file not found/)) {

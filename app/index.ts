@@ -1,7 +1,7 @@
 import { EngagementInstance } from '@vivocha/public-entities';
-import { createEngagementInstance, EngagementInstanceOptions } from '@vivocha/public-entities/dist/wrappers/widget';
-import { innerScript } from '@vivocha/public-entities/dist/wrappers/widget_inner';
-import { DebuggerInstanceRenderer } from '@vivocha/public-entities/dist/wrappers/widget_debugger';
+import { createEngagementInstance, EngagementInstanceOptions } from '@vivocha/public-entities/dist/wrappers/widget.js';
+import { innerScript } from '@vivocha/public-entities/dist/wrappers/widget_inner.js';
+import { DebuggerInstanceRenderer } from '@vivocha/public-entities/dist/wrappers/widget_debugger.js';
 
 window['vivocha'] = {
   getWidget(id: string) {

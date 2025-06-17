@@ -3,7 +3,7 @@
 import type { MultiLanguageString } from '@vivocha/public-entities';
 import { Scopes } from 'arrest';
 import { Command } from 'commander';
-import fs from 'fs/promises';
+import fs from 'fs';
 import * as jsonpolice from 'jsonpolice';
 import { parse as parsePath } from 'path';
 import { type Config, meta, read as readConfig } from './lib/config.js';
@@ -50,7 +50,7 @@ import { retriever, wsUrl } from './lib/ws.js';
 
               // load strings.json
               const strings: MultiLanguageString[] = await new Promise<MultiLanguageString[]>(resolve => {
-                const raw = fs.readFile(f).toString();
+                const raw = fs.readFileSync(f).toString();
                 resolve(JSON.parse(raw) as MultiLanguageString[]);
               }).catch(() => {
                 throw "Failed to parse file";
@@ -104,7 +104,7 @@ import { retriever, wsUrl } from './lib/ws.js';
             files = [po_file];
           }
           try {
-            const mergeTo: MultiLanguageString[] = options.merge ? JSON.parse(fs.readFileSync(options.merge, 'utf8')) : [];
+            const mergeTo: MultiLanguageString[] = options.merge ? JSON.parse(fs.readFileSync(options.merge, { encoding: "utf8" })) : [];
             const strings = (await importPOFiles(files, mergeTo, options.prefix)).sort((a,b) => a.id.localeCompare(b.id));
             process.stdout.write(JSON.stringify(strings, null, 2) + '\n');
           } catch(e) {

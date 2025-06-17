@@ -7,7 +7,7 @@ export class RequestError extends Error {
   }
 }
 
-export async function ws(path: string, opts?: any, okStatusCodes: number[] = [ 200, 201 ]): Promise<any> {
+export const ws = async (path: string, opts?: any, okStatusCodes: number[] = [ 200, 201 ]): Promise<any> => {
   const config = await readConfig();
   const url = await wsUrl(path);
   return new Promise((resolve, reject) => {
@@ -28,7 +28,7 @@ export async function ws(path: string, opts?: any, okStatusCodes: number[] = [ 2
       }
     });
   });
-}
+};
 
 export async function wsUrl(path: string): Promise<string> {
   const config = await readConfig();

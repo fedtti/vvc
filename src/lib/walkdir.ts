@@ -1,9 +1,9 @@
 import fs from 'fs/promises';
 
 /**
- * Recursively lists all files in a directory.
- * @param {string} path - The path to the directory or file.
- * @returns {Promise<string[]>} - A promise that resolves to an array of file paths.
+ * Recursively list all elements in a directory.
+ * @param {string} path - Path to the element.
+ * @returns {Promise<string[]>} - Resolve to an array of elements’ paths.
  */
 export const listFiles = async (path: string): Promise<string[]> => {
   const out: string[] = [];
