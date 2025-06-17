@@ -1,7 +1,7 @@
 import type { Asset } from '@vivocha/public-entities';
-import * as crypto from 'crypto';
-import * as fs from 'fs';
-import * as path from 'path';
+import crypto from 'crypto';
+import fs from 'fs';
+import path from 'path';
 import { promisify } from 'util';
 import { type Config, read as readConfig } from './config.js';
 import { listFiles } from './walkdir.js';
