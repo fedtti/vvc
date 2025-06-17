@@ -5,7 +5,7 @@ import { type Config, meta, read as readConfig, unlink as unlinkConfig } from '.
 import { checkLoginAndVvcVersion } from './lib/startup.js';
 import { ws } from './lib/ws.js';
 
-(async () => {
+(async (): Promise<void> => {
   const program = new Command();
   const options = program.opts();
 
@@ -21,9 +21,9 @@ import { ws } from './lib/ws.js';
     await unlinkConfig();
     console.log('Logged out');
     process.exit(0);
-  } catch(e) {
+  } catch(error) {
     if (options.verbose) {
-      console.error(e);
+      console.error(error.message);
     }
     unlinkConfig().then(() => {
       console.log('Logged out');

@@ -2,7 +2,6 @@
 
 import { Command } from 'commander';
 import { input, password } from '@inquirer/prompts';
-
 import { type Config, meta, read as readConfig, unlink as unlinkConfig, write as writeConfig } from './lib/config.js';
 import { checkLoginAndVvcVersion } from './lib/startup.js';
 import { ws } from './lib/ws.js';
@@ -22,9 +21,9 @@ program
  */
 const checkAccountId = async (account: string): Promise<boolean> => {
   try {
-    const url = `https://www.vivocha.com/a/${account}/api/v3/openapi.json`;
-    const response = await fetch(url, {
-      method: 'HEAD'
+    const response = await fetch(`https://www.vivocha.com/a/${account}/api/v3/openapi.json`, {
+      method: 'HEAD',
+      redirect: 'manual'
     });
     return response.ok; // If the response is OK, the account ID is valid.
   } catch (error) {
@@ -33,16 +32,52 @@ const checkAccountId = async (account: string): Promise<boolean> => {
   }
 };
 
+/**
+ * 
+ * @param account - The account ID to get the server for.
+ * @returns 
+ */
+const getServer = async (account: string): Promise<string> => {
+  try {
+    const response = await fetch(`https://www.vivocha.com/a/${account}/api/v3/openapi.json`, {
+      method: 'HEAD',
+      redirect: 'manual'
+    });
+    if (response.status !== 302 || !response.headers.get('Location')) {
+      console.error('Invalid account.'); // TODO: Write a better error message.
+      throw new Error('Invalid account.');
+    } else { 
+      const url = new URL(Array.isArray(response.headers.get('Location')) ? response.headers.get('Location')[0] as string : response.headers.get('Location') as string);
+      return url.host;
+    }
+  } catch (error) {
+
+  }
+};
+
+/**
+ * 
+ * @param server - The server to connect to.
+ * @param account 
+ */
+const getClient = async (server: string, account: string): Promise<string> => {
+  try {
+  
+  } catch (error) {
+
+  }
+}
+
+/**
+ * Checks if the user is logged in and if the VVC version is compatible.
+ * @returns {Promise<void>} - Resolves if the user is logged in and the version is compatible, rejects otherwise.
+ */
 (async (): Promise<void> => {
   try {
     await checkLoginAndVvcVersion();
-
     const config: Config = await readConfig();
-    
     await ws(`clients/${config.userId}`, { method: 'DELETE' });
-    
     await unlinkConfig();
-
   } catch (error) {
     console.error(); // TODO
     throw new Error(error.message);
@@ -62,47 +97,33 @@ const checkAccountId = async (account: string): Promise<boolean> => {
       message: 'Password'
     });
 
-    const server: string = options.server || await new Promise<string>((resolve, reject) => {
-      request({ // TODO: Replace with fetch().
-        url: `https://www.vivocha.com/a/${data.acct_id}/api/v2/swagger.json`,
-        method: 'HEAD',
-        followRedirect: false
-      }, function(err, res, data) {
-        if (err) {
-          reject(err);
-        } else if (res.statusCode !== 302 || !res.headers.location) {
-          reject(new Error('invalid account'));
-        } else {
-          let u = new URL(Array.isArray(res.headers.location) ? res.headers.location[0] as string: res.headers.location as string);
-          resolve(u.host);
-        }
-      });
-    });
+    const server: string = options.server || getServer(accountId);
+    const client: any = getClient(server, accountId);
     
-    const client: any = await new Promise((resolve, reject) => {
-    request({ // TODO: Replace with fetch().
-        url: `https://${server}/a/${accountId}/api/v3/client`,
-        method: 'POST',
-        json: true,
-        body: {
-          scope: [ 'Widget.*', 'Asset.*', 'String.*', 'Reflect.cli', 'Client.remove' ],
-          user_id: userId
-        },
-        auth: {
-          user: userId,
-          pass: userPassword,
-          sendImmediately: true
-        }
-      }, function(err, res, data) {
-        if (err) {
-          reject(err);
-        } else if (res.statusCode !== 201) {
-          reject(new Error('login failed'));
-        } else {
-          resolve(data);
-        }
-      });
-     });
+    await new Promise((resolve, reject) => {
+    // request({ // TODO: Replace with fetch().
+    //     url: `https://${server}/a/${accountId}/api/v3/client`,
+    //     method: 'POST',
+    //     json: true,
+    //     body: {
+    //       scope: [ 'Widget.*', 'Asset.*', 'String.*', 'Reflect.cli', 'Client.remove' ],
+    //       user_id: userId
+    //     },
+    //     auth: {
+    //       user: userId,
+    //       pass: userPassword,
+    //       sendImmediately: true
+    //     }
+    //   }, function(err, res, data) {
+    //     if (err) {
+    //       reject(err);
+    //     } else if (res.statusCode !== 201) {
+    //       reject(new Error('login failed'));
+    //     } else {
+    //       resolve(data);
+    //     }
+    //   });
+    //  });
 
     const config: Config = await readConfig().catch(() => { return {} as Config });
 

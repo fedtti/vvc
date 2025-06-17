@@ -3,23 +3,20 @@
 import type { MultiLanguageString } from '@vivocha/public-entities';
 import { Scopes } from 'arrest';
 import { Command } from 'commander';
-import * as fs from 'fs';
+import fs from 'fs/promises';
 import * as jsonpolice from 'jsonpolice';
 import { parse as parsePath } from 'path';
-import { promisify } from 'util';
 import { type Config, meta, read as readConfig } from './lib/config.js';
-import { checkLoginAndVersion } from './lib/startup.js';
+import { checkLoginAndVvcVersion } from './lib/startup.js';
 import { exportPOFiles, fetchStrings, importPOFiles, uploadStringChanges } from './lib/strings.js';
 import { retriever, wsUrl } from './lib/ws.js';
-
-const access = promisify(fs.access);
 
 (async () => {
   const program = new Command();
   const options = program.opts();
 
   try {
-    await checkLoginAndVersion();
+    await checkLoginAndVvcVersion();
     const config: Config = await readConfig();
 
     program
@@ -47,13 +44,13 @@ const access = promisify(fs.access);
             }, { retriever });
 
             for (let f of files) {
-              await access(f, fs.constants.R_OK).catch(() => {
+              await fs.access(f, fs.constants.R_OK).catch(() => {
                 throw "file not found";
               });
 
               // load strings.json
               const strings: MultiLanguageString[] = await new Promise<MultiLanguageString[]>(resolve => {
-                const raw = fs.readFileSync(f).toString('utf8');
+                const raw = fs.readFile(f).toString();
                 resolve(JSON.parse(raw) as MultiLanguageString[]);
               }).catch(() => {
                 throw "Failed to parse file";
