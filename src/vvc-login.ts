@@ -60,9 +60,25 @@ const getServer = async (account: string): Promise<string> => {
  * @param server - The server to connect to.
  * @param account 
  */
-const getClient = async (server: string, account: string): Promise<string> => {
+const getClient = async (server: string, account: string, user: string, password: string): Promise<string> => {
   try {
-  
+    const response = await fetch(`https://${server}/a/${account}/api/v3/client`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Basic ${Buffer.from(`${user}:${password}`).toString('base64')}`
+      },
+      body: JSON.stringify({
+        scope: [ 'Widget.*', 'Asset.*', 'String.*', 'Reflect.cli', 'Client.remove' ],
+        user_id: user
+      })
+    });
+    if (!response.ok || response.status !== 201) {
+      console.error('Login failed.'); // TODO: Write a better error message.
+      throw new Error('Login failed.');
+    }
+    const data = await response.json();
+    return data;
   } catch (error) {
 
   }
@@ -96,44 +112,14 @@ const getClient = async (server: string, account: string): Promise<string> => {
     const userPassword: string = await password({
       message: 'Password'
     });
-
-    const server: string = options.server || getServer(accountId);
-    const client: any = getClient(server, accountId);
-    
-    await new Promise((resolve, reject) => {
-    // request({ // TODO: Replace with fetch().
-    //     url: `https://${server}/a/${accountId}/api/v3/client`,
-    //     method: 'POST',
-    //     json: true,
-    //     body: {
-    //       scope: [ 'Widget.*', 'Asset.*', 'String.*', 'Reflect.cli', 'Client.remove' ],
-    //       user_id: userId
-    //     },
-    //     auth: {
-    //       user: userId,
-    //       pass: userPassword,
-    //       sendImmediately: true
-    //     }
-    //   }, function(err, res, data) {
-    //     if (err) {
-    //       reject(err);
-    //     } else if (res.statusCode !== 201) {
-    //       reject(new Error('login failed'));
-    //     } else {
-    //       resolve(data);
-    //     }
-    //   });
-    //  });
-
+    const server: string = options.server || await getServer(accountId);
+    const client: any = await getClient(server, accountId, userId, userPassword);
     const config: Config = await readConfig().catch(() => { return {} as Config });
-
-    config.server = server || 'www.vivocha.com';
-    config.accountId = accountId;
-    config.userId = client.id;
-    config.secret = client.secret;
-
+          config.server = server || 'www.vivocha.com';
+          config.accountId = accountId;
+          config.userId = client.id;
+          config.secret = client.secret;
     await writeConfig(config);
-
     console.info('Logged in.');
     process.exit(0);
   } catch(error) {
@@ -141,7 +127,6 @@ const getClient = async (server: string, account: string): Promise<string> => {
       console.error(error.message);
       throw new Error(error.message);
     }
-
     console.error('Login failed.');
     process.exit(1);
   }
