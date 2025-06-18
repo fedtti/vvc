@@ -120,20 +120,20 @@ export async function uploadWidgetAssetChanges(widgetId: string, oldAssets: Asse
  * @param {string} filename - The path where the asset should be saved.
  */
 const downloadAsset = async (url: string, filename: string): Promise<void> => {
-  const destPath = path.parse(filename);
-  if (!!destPath.dir) {
-    await access(destPath.dir)
+  const pathInfo = path.parse(filename);
+  if (!!pathInfo.dir) {
+    await access(pathInfo.dir)
             .then(async () => {
-              const statInfo = await stat(destPath.dir)
+              const statInfo = await stat(pathInfo.dir)
                                        .catch(() => {
-                                         throw `Cannot access destination path '${destPath.dir}.'`;
+                                         throw `Cannot access destination path '${pathInfo.dir}.'`;
                                        });
       if (!statInfo.isDirectory()) {
-        throw `Destination path '${destPath.dir}' already exists and it’s not a directory.`;
+        throw `Destination path '${pathInfo.dir}' already exists and it’s not a directory.`;
       }
     }, () => {
-      mkdir(destPath.dir, { recursive: true }, () => {
-        throw `Cannot create path '${destPath.dir}'.`;
+      mkdir(pathInfo.dir, { recursive: true }, () => {
+        throw `Cannot create path '${pathInfo.dir}'.`;
       });
     });
   }
