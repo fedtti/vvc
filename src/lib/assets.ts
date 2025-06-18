@@ -44,7 +44,7 @@ export const scanWidgetAssets = async (basePath: string): Promise<Asset[]> => {
   try {
     await thumbnail;
     assets.push(thumbnail);
-  } catch(error) { }
+  } catch (error) { }
 
   const assetsPath: string = `${basePath}/assets`;
 
@@ -52,7 +52,7 @@ export const scanWidgetAssets = async (basePath: string): Promise<Asset[]> => {
     assets.push(...(await listFiles(assetsPath))
                             .map(file => file.replace(/^\.\//, ''))
                             .map(file => checkAsset(file)));
-  } catch(error) { }
+  } catch (error) { }
   return Promise.all(assets);
 };
 
