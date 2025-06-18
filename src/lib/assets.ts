@@ -131,7 +131,7 @@ const downloadAsset = async (url: string, filename: string): Promise<void> => {
       if (!statInfo.isDirectory()) {
         throw `Destination path '${pathInfo.dir}' already exists and it’s not a directory.`;
       }
-    }, () => {
+    }, async () => {
       mkdir(pathInfo.dir, { recursive: true }, () => {
         throw `Cannot create path '${pathInfo.dir}'.`;
       });
@@ -139,7 +139,7 @@ const downloadAsset = async (url: string, filename: string): Promise<void> => {
   }
   console.info(`Downloading ${filename}…`);
   await download(url, filename);
-}
+};
 
 /**
  * Download assets from the server.
