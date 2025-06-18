@@ -1,13 +1,13 @@
 import type { Asset } from '@vivocha/public-entities';
 import crypto from 'crypto';
-import { access, constants, stat } from 'fs/promises';
 import { createReadStream, mkdir } from 'fs';
+import { access, constants, stat } from 'fs/promises';
 import path from 'path';
 import { type Config, read as readConfig } from './config.js';
 import { listFiles } from './walkdir.js';
 import { download, ws } from './ws.js';
 
-export async function scanWidgetAssets(basepath: string): Promise<Asset[]> {
+export const scanWidgetAssets = async (basepath: string): Promise<Asset[]> => {
   const assets: Promise<Asset>[] = [];
   const resolvedPath = path.resolve(basepath);
 
@@ -27,7 +27,7 @@ export async function scanWidgetAssets(basepath: string): Promise<Asset[]> {
     } else {
       throw new Error(base_filename);
     }
-  }
+  };
 
   const html = checkAsset(`${resolvedPath}/main.html`);
   const scss = checkAsset(`${resolvedPath}/main.scss`);
@@ -48,6 +48,7 @@ export async function scanWidgetAssets(basepath: string): Promise<Asset[]> {
   } catch(e) { }
   return Promise.all(assets);
 }
+
 export function hashWidgetAssets(assets: Asset[]): Promise<Asset[]> {
   const hashedAssets: Promise<Asset>[] = [];
 
@@ -65,6 +66,7 @@ export function hashWidgetAssets(assets: Asset[]): Promise<Asset[]> {
   });
   return Promise.all(hashedAssets);
 }
+
 export async function uploadWidgetAssetChanges(widgetId: string, oldAssets: Asset[], newAssets: Asset[], global: boolean) {
   async function upload(asset: Asset): Promise<Asset> {
     try {
@@ -112,7 +114,7 @@ export async function uploadWidgetAssetChanges(widgetId: string, oldAssets: Asse
   }
 }
 
-async function downloadAsset(url: string, filename: string) {
+const downloadAsset = async (url: string, filename: string): Promise<void> => {
   const pathInfo = path.parse(filename);
   if (pathInfo.dir) {
     await access(pathInfo.dir).then(async () => {
@@ -131,9 +133,14 @@ async function downloadAsset(url: string, filename: string) {
   console.log(`Downloading ${filename}`);
   await download(url, filename);
 }
-export async function downloadAssets(assets: Asset[]) {
+
+/**
+ * Download assets from the server.
+ * @param {Asset[]} assets - Array of assets to download.
+ */
+export const downloadAssets = async (assets: Asset[]): Promise<void> => {
   const config: Config = await readConfig();
-  for (let a of assets) {
-    await downloadAsset(`${config.info.assets}${a.id}`, a.path);
+  for (let asset of assets) {
+    await downloadAsset(`${config.info.assets}${asset.id}`, asset.path);
   }
-}
+};
