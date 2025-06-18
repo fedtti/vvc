@@ -1,57 +1,63 @@
 import type { Asset } from '@vivocha/public-entities';
 import crypto from 'crypto';
-import { createReadStream, mkdir } from 'fs';
+import { createReadStream, mkdir, PathLike, Stats } from 'fs';
 import { access, constants, stat } from 'fs/promises';
 import path from 'path';
 import { type Config, read as readConfig } from './config.js';
 import { listFiles } from './walkdir.js';
 import { download, ws } from './ws.js';
 
-export const scanWidgetAssets = async (basepath: string): Promise<Asset[]> => {
+/**
+ * Scans the specified basepath for widget assets and returns an array of Asset objects.
+ * @param {string} basepath - The path to the widget directory.
+ * @returns {Promise<Asset[]>} - A promise that resolves to an array of Asset objects.
+ */
+export const scanWidgetAssets = async (basePath: string): Promise<Asset[]> => {
   const assets: Promise<Asset>[] = [];
-  const resolvedPath = path.resolve(basepath);
+  const resolvedPath: string = path.resolve(basePath);
 
-  async function checkAsset(filename): Promise<Asset> {
-    let rok = true, info;
+  const checkAsset = async (fileName: string): Promise<Asset> => {
+    let readOk: boolean = true,
+        info: Stats;
     try {
-      await access(filename, constants.R_OK);
-      info = await stat(filename);
-    } catch(err) {
-      rok = false;
+      await access(fileName, constants.R_OK);
+      info = await stat(fileName);
+    } catch (error) {
+      readOk = false;
     }
-    let base_filename = filename.replace(resolvedPath + '/', '');
-    if (rok && info.isFile()) {
+    let baseFileName = fileName.replace(`${resolvedPath}/`, '');
+    if (!!readOk && !!info.isFile()) {
       return {
-        path: base_filename
+        path: baseFileName
       } as Asset;
     } else {
-      throw new Error(base_filename);
+      throw new Error(baseFileName);
     }
   };
 
   const html = checkAsset(`${resolvedPath}/main.html`);
   const scss = checkAsset(`${resolvedPath}/main.scss`);
-  const thumb = checkAsset(`${resolvedPath}/thumbnail.png`);
-
+  const thumbnail = checkAsset(`${resolvedPath}/thumbnail.png`);
   assets.push(html);
   assets.push(scss);
 
   try {
-    await thumb;
-    assets.push(thumb);
-  } catch(e) { }
+    await thumbnail;
+    assets.push(thumbnail);
+  } catch(error) { }
 
-  const assetsPath: string = `${basepath}/assets`;
+  const assetsPath: string = `${basePath}/assets`;
 
   try {
-    assets.push(... (await listFiles(assetsPath)).map(f => f.replace(/^\.\//, '')).map(f => checkAsset(f)));
-  } catch(e) { }
+    assets.push(...(await listFiles(assetsPath))
+                            .map(file => file.replace(/^\.\//, ''))
+                            .map(file => checkAsset(file)));
+  } catch(error) { }
   return Promise.all(assets);
-}
+};
 
-export function hashWidgetAssets(assets: Asset[]): Promise<Asset[]> {
+export const hashWidgetAssets = (assets: Asset[]): Promise<Asset[]> => {
   const hashedAssets: Promise<Asset>[] = [];
-
   assets.forEach(({ path: filename }) => {
     hashedAssets.push(new Promise<Asset>((resolve, reject) => {
       let hash = crypto.createHash('sha256');
@@ -65,7 +71,7 @@ export function hashWidgetAssets(assets: Asset[]): Promise<Asset[]> {
     }));
   });
   return Promise.all(hashedAssets);
-}
+};
 
 export async function uploadWidgetAssetChanges(widgetId: string, oldAssets: Asset[], newAssets: Asset[], global: boolean) {
   async function upload(asset: Asset): Promise<Asset> {
