@@ -1,14 +1,11 @@
 import type { Asset } from '@vivocha/public-entities';
 import crypto from 'crypto';
-import fs from 'fs';
+import { access, constants, stat } from 'fs/promises';
+import { createReadStream, mkdir } from 'fs';
 import path from 'path';
-import { promisify } from 'util';
 import { type Config, read as readConfig } from './config.js';
 import { listFiles } from './walkdir.js';
 import { download, ws } from './ws.js';
-
-const stat = promisify(fs.stat);
-const access = promisify(fs.access);
 
 export async function scanWidgetAssets(basepath: string): Promise<Asset[]> {
   const assets: Promise<Asset>[] = [];
@@ -17,7 +14,7 @@ export async function scanWidgetAssets(basepath: string): Promise<Asset[]> {
   async function checkAsset(filename): Promise<Asset> {
     let rok = true, info;
     try {
-      await access(filename, fs.constants.R_OK);
+      await access(filename, constants.R_OK);
       info = await stat(filename);
     } catch(err) {
       rok = false;
@@ -57,7 +54,7 @@ export function hashWidgetAssets(assets: Asset[]): Promise<Asset[]> {
   assets.forEach(({ path: filename }) => {
     hashedAssets.push(new Promise<Asset>((resolve, reject) => {
       let hash = crypto.createHash('sha256');
-      let stream = fs.createReadStream(filename);
+      let stream = createReadStream(filename);
       stream.on('error', err => reject(err));
       stream.on('data', chunk => hash.update(chunk));
       stream.on('end', () => resolve({
@@ -77,7 +74,7 @@ export async function uploadWidgetAssetChanges(widgetId: string, oldAssets: Asse
           id: `${asset.path}/${asset.hash.substr(0,7)}`
         },
         formData: {
-          file: fs.createReadStream(asset.path)
+          file: createReadStream(asset.path)
         }
       });
       asset.id = data.id;
@@ -126,7 +123,7 @@ async function downloadAsset(url: string, filename: string) {
         throw `Destination path ${pathInfo.dir} exists and it\'s not a directory`;
       }
     }, async () => {
-      await fs.mkdir(pathInfo.dir, { recursive: true }, () => {
+      await mkdir(pathInfo.dir, { recursive: true }, () => {
         throw `Cannot create path ${pathInfo.dir}`;
       });
     });
