@@ -1,6 +1,6 @@
 import type { Asset } from '@vivocha/public-entities';
 import crypto from 'crypto';
-import { createReadStream, mkdir, PathLike, Stats } from 'fs';
+import { createReadStream, mkdir, Stats } from 'fs';
 import { access, constants, stat } from 'fs/promises';
 import path from 'path';
 import { type Config, read as readConfig } from './config.js';
@@ -8,14 +8,19 @@ import { listFiles } from './walkdir.js';
 import { download, ws } from './ws.js';
 
 /**
- * Scans the specified basepath for widget assets and returns an array of Asset objects.
- * @param {string} basepath - The path to the widget directory.
- * @returns {Promise<Asset[]>} - A promise that resolves to an array of Asset objects.
+ *
+ * @param {string} basePath -
+ * @returns {Promise<Asset[]>} -
  */
 export const scanWidgetAssets = async (basePath: string): Promise<Asset[]> => {
   const assets: Promise<Asset>[] = [];
   const resolvedPath: string = path.resolve(basePath);
 
+  /**
+   * 
+   * @param fileName -
+   * @returns 
+   */
   const checkAsset = async (fileName: string): Promise<Asset> => {
     let readOk: boolean = true,
         info: Stats;
@@ -56,13 +61,18 @@ export const scanWidgetAssets = async (basePath: string): Promise<Asset[]> => {
   return Promise.all(assets);
 };
 
+/**
+ * 
+ * @param {Asset[]} assets -
+ * @returns {Asset[]}
+ */
 export const hashWidgetAssets = (assets: Asset[]): Promise<Asset[]> => {
   const hashedAssets: Promise<Asset>[] = [];
   assets.forEach(({ path: filename }) => {
     hashedAssets.push(new Promise<Asset>((resolve, reject) => {
-      let hash = crypto.createHash('sha256');
-      let stream = createReadStream(filename);
-      stream.on('error', err => reject(err));
+      const hash = crypto.createHash('sha256');
+      const stream = createReadStream(filename);
+      stream.on('error', error => reject(error));
       stream.on('data', chunk => hash.update(chunk));
       stream.on('end', () => resolve({
         path: filename,
@@ -73,6 +83,13 @@ export const hashWidgetAssets = (assets: Asset[]): Promise<Asset[]> => {
   return Promise.all(hashedAssets);
 };
 
+/**
+ * 
+ * @param widgetId 
+ * @param oldAssets 
+ * @param newAssets 
+ * @param global 
+ */
 export async function uploadWidgetAssetChanges(widgetId: string, oldAssets: Asset[], newAssets: Asset[], global: boolean) {
   async function upload(asset: Asset): Promise<Asset> {
     try {
@@ -118,15 +135,15 @@ export async function uploadWidgetAssetChanges(widgetId: string, oldAssets: Asse
       if (o.type) n.type = o.type;
     }
   }
-}
+};
 
 /**
- * Downloads an asset from the server and saves it to the specified destination path.
- * @param {string} url - The URL of the asset to download.
- * @param {string} filename - The path where the asset should be saved.
+ * 
+ * @param {string} url - 
+ * @param {string} fileName - 
  */
-const downloadAsset = async (url: string, filename: string): Promise<void> => {
-  const pathInfo = path.parse(filename);
+const downloadAsset = async (url: string, fileName: string): Promise<void> => {
+  const pathInfo = path.parse(fileName);
   if (!!pathInfo.dir) {
     await access(pathInfo.dir)
             .then(async () => {
@@ -143,13 +160,13 @@ const downloadAsset = async (url: string, filename: string): Promise<void> => {
       });
     });
   }
-  console.info(`Downloading ${filename}…`);
-  await download(url, filename);
+  console.info(`Downloading ${fileName}…`);
+  await download(url, fileName);
 };
 
 /**
- * Download assets from the server.
- * @param {Asset[]} assets - Array of assets to download.
+ * 
+ * @param {Asset[]} assets -
  */
 export const downloadAssets = async (assets: Asset[]): Promise<void> => {
   const config: Config = await readConfig();
