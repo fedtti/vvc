@@ -90,13 +90,13 @@ export const hashWidgetAssets = (assets: Asset[]): Promise<Asset[]> => {
  * @param newAssets 
  * @param global 
  */
-export async function uploadWidgetAssetChanges(widgetId: string, oldAssets: Asset[], newAssets: Asset[], global: boolean) {
+export const uploadWidgetAssetChanges = async (widgetId: string, oldAssets: Asset[], newAssets: Asset[], global: boolean): Promise<void> => {
   async function upload(asset: Asset): Promise<Asset> {
     try {
-      let data = await ws(`widgets/${widgetId}/upload${global ? '?global=true' : ''}`, {
+      let data = await ws(`widgets/${widgetId}/upload${!!global ? '?global=true' : ''}`, {
         method: 'POST',
         qs: {
-          id: `${asset.path}/${asset.hash.substr(0,7)}`
+          id: `${asset.path}/${asset.hash.substr(0, 7)}`
         },
         formData: {
           file: createReadStream(asset.path)
@@ -106,15 +106,15 @@ export async function uploadWidgetAssetChanges(widgetId: string, oldAssets: Asse
       asset.type = data.type;
       asset.size = data.size;
       return asset;
-    } catch(err) {
-      if (err.originalError) {
-        console.error('upload error', err.originalError);
-      } else if (err.response) {
-        console.error('upload failed', err.response.statusCode);
+    } catch (error) {
+      if (error.originalError) {
+        console.error('upload error', error.originalError);
+      } else if (error.response) {
+        console.error('upload failed', error.response.statusCode);
       } else {
-        console.error(err);
+        console.error(error);
       }
-      throw err;
+      throw error;
     }
   }
   function reduce(o, i) {
