@@ -96,7 +96,7 @@ export const uploadWidgetAssetChanges = async (widgetId: string, oldAssets: Asse
       let data = await ws(`widgets/${widgetId}/upload${!!global ? '?global=true' : ''}`, {
         method: 'POST',
         qs: {
-          id: `${asset.path}/${asset.hash.substr(0, 7)}`
+          id: `${asset.path}/${asset.hash.substring(0, 8)}`
         },
         formData: {
           file: createReadStream(asset.path)
