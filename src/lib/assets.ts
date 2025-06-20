@@ -117,22 +117,25 @@ export const uploadWidgetAssetChanges = async (widgetId: string, oldAssets: Asse
       throw error;
     }
   }
-  function reduce(o, i) {
-    o[i.path] = i;
-    return o;
+
+  const reduce = (object: any, item: any) => {
+    object[item.path] = item;
+    return object;
   }
+
   const oldMap = oldAssets.reduce(reduce, {});
   const newMap = newAssets.reduce(reduce, {});
 
-  for (let k in newMap) {
-    const o = oldMap[k], n = newMap[k];
-    if (!o || !o.id || o.hash !== n.hash) {
-      console.log(`${k} changed, uploading`);
-      await upload(n);
+  for (let key in newMap) {
+    const oldKey = oldMap[key],
+          newKey = newMap[key];
+    if (!oldKey || !oldKey.id || oldKey.hash !== newKey.hash) {
+      console.log(`${key} changed, uploading`);
+      await upload(newKey);
     } else {
-      n.id = o.id;
-      if (o.size) n.size = o.size;
-      if (o.type) n.type = o.type;
+      newKey.id = oldKey.id;
+      if (oldKey.size) newKey.size = oldKey.size;
+      if (oldKey.type) newKey.type = oldKey.type;
     }
   }
 };
