@@ -55,7 +55,7 @@ export const scanWidgetAssets = async (basePath: string): Promise<Asset[]> => {
 
   try {
     assets.push(...(await listFiles(assetsPath))
-                            .map(file => file.replace(/^\.\//, ''))
+                            .map(file => file.replace(/^\.\//, '')) // Remove leading `./` from file paths.
                             .map(file => checkAsset(file)));
   } catch (error) { }
   return Promise.all(assets);
@@ -91,7 +91,7 @@ export const hashWidgetAssets = (assets: Asset[]): Promise<Asset[]> => {
  * @param global 
  */
 export const uploadWidgetAssetChanges = async (widgetId: string, oldAssets: Asset[], newAssets: Asset[], global: boolean): Promise<void> => {
-  async function upload(asset: Asset): Promise<Asset> {
+  const upload = async (asset: Asset): Promise<Asset> => {
     try {
       let data = await ws(`widgets/${widgetId}/upload${!!global ? '?global=true' : ''}`, {
         method: 'POST',
@@ -108,9 +108,9 @@ export const uploadWidgetAssetChanges = async (widgetId: string, oldAssets: Asse
       return asset;
     } catch (error) {
       if (error.originalError) {
-        console.error('upload error', error.originalError);
+        console.error(`Upload error: ${error.originalError}.`);
       } else if (error.response) {
-        console.error('upload failed', error.response.statusCode);
+        console.error(`Upload failed: ${error.response.statusCode}.`);
       } else {
         console.error(error);
       }
@@ -118,7 +118,9 @@ export const uploadWidgetAssetChanges = async (widgetId: string, oldAssets: Asse
     }
   }
 
-  const reduce = (object: any, item: any) => {
+  // Reduce function to create a map of assets by their path.
+  // This allows for quick lookups to compare old and new assets.
+  const reduce = (object: any, item: any): any => {
     object[item.path] = item;
     return object;
   }
@@ -126,16 +128,16 @@ export const uploadWidgetAssetChanges = async (widgetId: string, oldAssets: Asse
   const oldMap = oldAssets.reduce(reduce, {});
   const newMap = newAssets.reduce(reduce, {});
 
-  for (let key in newMap) {
-    const oldKey = oldMap[key],
-          newKey = newMap[key];
-    if (!oldKey || !oldKey.id || oldKey.hash !== newKey.hash) {
-      console.log(`${key} changed, uploading`);
-      await upload(newKey);
+  for (let file in newMap) {
+    const oldFile = oldMap[file],
+          newFile = newMap[file];
+    if (!oldFile || !oldFile.id || oldFile.hash !== newFile.hash) {
+      console.info(`${file} is either new or has changed, uploading…`);
+      await upload(newFile);
     } else {
-      newKey.id = oldKey.id;
-      if (oldKey.size) newKey.size = oldKey.size;
-      if (oldKey.type) newKey.type = oldKey.type;
+      newFile.id = oldFile.id;
+      if (!!oldFile.size) newFile.size = oldFile.size;
+      if (!!oldFile.type) newFile.type = oldFile.type;
     }
   }
 };
