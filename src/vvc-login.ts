@@ -18,8 +18,11 @@ program
 
 const getServer = async (account: string): Promise<string> => {
   try {
-    const response = await fetch(`https://www.vivocha.com/a/${account}/api/v3/openapi.json`, { method: 'HEAD'});
-    if (response.status !== 200 && response.status !== 302) {
+    const response = await fetch(`https://www.vivocha.com/a/${account}/api/v3/openapi.json`, {
+      method: 'HEAD',
+      redirect: 'manual'
+    });
+    if (response.status !== 200 && response.status !== 302 && response.status !== 307 || !response.headers.get('Location')) {
       console.error('Invalid account.');
       throw new Error('Invalid account.');
     } else { 
