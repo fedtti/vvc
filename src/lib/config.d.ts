@@ -1,4 +1,4 @@
-export interface Config {
+export type Config = {
   server: string;
   account: string;
   username: string;

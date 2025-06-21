@@ -21,8 +21,10 @@ let config: Promise<Config>;
  * @returns {Promise<Config>}
  */
 const loadConfig = async (): Promise<Config> => {
-  const data = await fs.readFile(configFilePath, { encoding: 'utf8' });
-  return Promise.resolve(JSON.parse(data.toString()));
+  try {
+    const data = await fs.readFile(configFilePath, { encoding: 'utf8' });
+    return JSON.parse(data);
+  } catch (error) {}
 };
 
 /**
