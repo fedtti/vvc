@@ -3,7 +3,8 @@ import crypto from 'crypto';
 import { createReadStream, mkdir, Stats } from 'fs';
 import { access, constants, stat } from 'fs/promises';
 import path from 'path';
-import { type Config, read as readConfig } from './config.js';
+import { read as readConfig } from './config.js';
+import type { Config } from './config.d.js';
 import { listFiles } from './walkdir.js';
 import { download, ws } from './ws.js';
 

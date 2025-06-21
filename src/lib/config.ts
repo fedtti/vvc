@@ -1,43 +1,17 @@
 import fs from 'fs/promises';
+import { homedir } from 'os';
+import type { Config } from './config.d.js';
 
-export interface Config {
-  server: string;
-  accountId: string;
-  userId: string;
-  secret: string;
-  info: any; // TODO: Define a more specific type for the server info.
-}
-
-interface ErrorCode extends Error {
-  code?: string;
-}
-
-/**
- * Get the home directory of the current user based on their operating system.
- * @returns {string} - Path to the home directory of the current user.
- */
-const getHomeDir = (): string => {
-	const user: string = process.env.LOGNAME || process.env.USER || process.env.LNAME || process.env.USERNAME;
-  let homeDir: string;
-  switch(process.platform) {
-    case 'win32':
-		  homeDir = process.env.USERPROFILE || `${process.env.HOMEDRIVE}${process.env.HOMEPATH}` || process.env.HOME || null;
-      break;
-    case 'darwin':
-		  homeDir = process.env.HOME || (!!user ? `/Users/${user}` : null);
-      break;
-    case 'linux':
-		  homeDir = process.env.HOME || (process.getuid() === 0 ? '/root' : (!!user ? `/home/${user}` : null));
-      break;
-    default:
-      homeDir = process.env.HOME || null;
+class ErrorCode extends Error {
+  constructor(message: string, public code?: string) {
+    super(message);
+    this.name = 'ErrorCode';
   }
-  return homeDir;
-};
+}
 
 export const meta: any = await import(`${__dirname}/../../package.json`, { with: { type: 'json' } }); // Import package metadata to get its version and other details.
 
-const configFileDir: string = `${getHomeDir()}/.vvc`;
+const configFileDir: string = `${homedir()}/.vvc`;
 const configFilePath: string = `${configFileDir}/config.json`;
 
 let config: Promise<Config>;
