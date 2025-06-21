@@ -9,7 +9,7 @@ import * as jsonpolice from 'jsonpolice';
 import { parse as parsePath } from 'path';
 import { meta, read as readConfig } from './lib/config.js';
 import type { Config } from './lib/config.d.js';
-import { checkLoginAndVvcVersion } from './lib/startup.js';
+import { checkVersion } from './lib/startup.js';
 import { exportPOFiles, fetchStrings, importPOFiles, uploadStringChanges } from './lib/strings.js';
 import { retriever, wsUrl } from './lib/ws.js';
 
@@ -18,7 +18,7 @@ import { retriever, wsUrl } from './lib/ws.js';
   const options = program.opts();
 
   try {
-    await checkLoginAndVvcVersion();
+    await checkVersion();
     const config: Config = await readConfig();
 
     program

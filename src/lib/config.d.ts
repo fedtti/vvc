@@ -3,5 +3,5 @@ export type Config = {
   account: string;
   username: string;
   password: string;
-  info: any; // TODO: Define a more specific type for the server info.
+  info: any; // TODO: @fedtti - Define a type for the info.
 }

@@ -45,7 +45,7 @@ const getClient = async (server: string, account: string, username: string, pass
       })
     });
     if (!response.ok || response.status !== 201) {
-      console.error('Login failed.'); // TODO: Write a better error message.
+      console.error(`Login failed: ${JSON.stringify(response.body)}.`);
       throw new Error('Login failed.');
     }
     const data = await response.json();
@@ -59,6 +59,8 @@ const getClient = async (server: string, account: string, username: string, pass
   const oldConfig: Config = await readConfig();
 
   if (!!oldConfig) {
+    await checkVersion();
+
     const confirm: boolean = await inputConfirm({
       message: `You are already logged in as ${oldConfig.username} on ${oldConfig.account}. Do you want to log out?`,
       default: false
@@ -71,8 +73,6 @@ const getClient = async (server: string, account: string, username: string, pass
       process.exit(0);
     }
   }
-
-  await checkVersion();
 
   try {
     let account: string;
@@ -104,6 +104,7 @@ const getClient = async (server: string, account: string, username: string, pass
           config.account = account;
           config.username = client.id;
           config.password = client.secret;
+    await checkVersion();
     await writeConfig(config);
     console.info('Logged in.');
     process.exit(0);

@@ -3,7 +3,7 @@
 import { Command } from 'commander';
 import { meta, read as readConfig } from './lib/config.js';
 import type { Config } from './lib/config.d.js';
-import { checkLoginAndVvcVersion } from './lib/startup.js';
+import { checkVersion } from './lib/startup.js';
 
 (async (): Promise<void> => {
   const program = new Command();
@@ -15,7 +15,7 @@ import { checkLoginAndVvcVersion } from './lib/startup.js';
       .option('-v, --verbose', 'Verbose output') // TODO: Give a better description.
       .parse(process.argv);
   
-    await checkLoginAndVvcVersion();
+    await checkVersion();
     const config: Config = await readConfig();
 
     console.info(`Currently logged in to account ${config.account} on world ${config.server}.`);
