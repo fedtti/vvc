@@ -17,37 +17,37 @@ const configFilePath: string = `${configFileDir}/config.json`;
 let config: Promise<Config>;
 
 /**
- * Reads the configuration from the configuration file.
- * @returns {Promise<Config>} - A promise that resolves to the configuration object.
+ * Load the configuration file.
+ * @returns {Promise<Config>}
  */
-const innerRead = async (): Promise<Config> => {
+const loadConfig = async (): Promise<Config> => {
   const data = await fs.readFile(configFilePath, { encoding: 'utf8' });
   return JSON.parse(data.toString());
 };
 
 /**
- * Reads the configuration from the existing configuration file.
- * @param {boolean} [force=false] - If true, forces a re-read of the configuration file.
- * @returns {Promise<Config>} - A promise that resolves to the configuration object.
+ * Read the configuration file.
+ * @param {boolean} [force=false] - If true, force a reload of the configuration file.
+ * @returns {Promise<Config>}
  */
 export const read = async (force: boolean = false): Promise<Config> => {
   if (!config || !!force) {
-    config = innerRead();
+    config = loadConfig();
   }
   return config;
 };
 
 /**
- * Writes a new configuration to the configuration file.
+ * Write a new configuration file.
  * @param {Config} newConfig - The new configuration object to write.
- * @returns {Promise<Config>} - A promise that resolves to the new configuration object.
+ * @returns {Promise<Config>}
  */
 export const write = async (newConfig: Config): Promise<Config> => {
   try {
     const stat = await fs.stat(configFileDir);
     if (!stat.isDirectory()) {
-      const error: ErrorCode = new Error(`${configFileDir} is not a directory.`);
-      error.code = 'ENOTDIR';
+      const error: ErrorCode = new Error(`Error: '${configFileDir}' is not a directory.`);
+            error.code = 'ENOTDIR';
       throw error;
     }
   } catch(error) {
@@ -61,8 +61,8 @@ export const write = async (newConfig: Config): Promise<Config> => {
 };
 
 /**
- * Deletes the existing configuration file.
- * @returns {Promise<void>} - A promise that resolves when the configuration file is successfully deleted.
+ * Delete the existing configuration file.
+ * @returns {Promise<void>}
  */
 export const unlink = (): Promise<void> => {
   return fs.unlink(configFilePath);
