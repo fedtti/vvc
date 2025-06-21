@@ -10,8 +10,8 @@ import { ws } from './lib/ws.js';
 const program = new Command();
 const options = program.opts();
 
+program.version(meta.version);
 program
-  .version(meta.version)
   .option('-v, --verbose', 'Verbose output') // TODO: Write a better description.
   .parse(process.argv);
 

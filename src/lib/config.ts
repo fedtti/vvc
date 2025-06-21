@@ -9,7 +9,7 @@ class ErrorCode extends Error {
   }
 }
 
-export const meta: any = await import(`${__dirname}/../../package.json`, { with: { type: 'json' } }); // Import package metadata to get its version and other details.
+export const meta: any = await import(`${import.meta.dirname}/../../package.json`, { with: { type: 'json' } });
 
 const configFileDir: string = `${homedir()}/.vvc`;
 const configFilePath: string = `${configFileDir}/config.json`;
