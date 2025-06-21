@@ -34,7 +34,7 @@ export const read = async (force: boolean = false): Promise<Config> => {
   if (!config || !!force) {
     config = loadConfig();
   }
-  return config = Promise.resolve(config);
+  return config;
 };
 
 /**
