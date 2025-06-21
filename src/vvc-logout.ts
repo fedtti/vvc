@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 
 import { Command } from 'commander';
-import { type Config, meta, read as readConfig, unlink as unlinkConfig } from './lib/config.js';
+import { meta, read as readConfig, unlink as unlinkConfig } from './lib/config.js';
+import type { Config } from './lib/config.d.js';
 import { checkLoginAndVvcVersion } from './lib/startup.js';
 import { ws } from './lib/ws.js';
 
@@ -17,7 +18,7 @@ import { ws } from './lib/ws.js';
   
     await checkLoginAndVvcVersion();
     const config: Config = await readConfig();
-    await ws(`clients/${config.userId}`, { method: 'DELETE' });
+    await ws(`clients/${config.username}`, { method: 'DELETE' });
     await unlinkConfig();
     console.log('Logged out');
     process.exit(0);

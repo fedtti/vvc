@@ -4,9 +4,11 @@ import type { MultiLanguageString } from '@vivocha/public-entities';
 import { Scopes } from 'arrest';
 import { Command } from 'commander';
 import fs from 'fs';
+import { access } from 'fs/promises';
 import * as jsonpolice from 'jsonpolice';
 import { parse as parsePath } from 'path';
-import { type Config, meta, read as readConfig } from './lib/config.js';
+import { meta, read as readConfig } from './lib/config.js';
+import type { Config } from './lib/config.d.js';
 import { checkLoginAndVvcVersion } from './lib/startup.js';
 import { exportPOFiles, fetchStrings, importPOFiles, uploadStringChanges } from './lib/strings.js';
 import { retriever, wsUrl } from './lib/ws.js';
@@ -44,7 +46,7 @@ import { retriever, wsUrl } from './lib/ws.js';
             }, { retriever });
 
             for (let f of files) {
-              await fs.access(f, fs.constants.R_OK).catch(() => {
+              await access(f, fs.constants.R_OK).catch(() => {
                 throw "file not found";
               });
 

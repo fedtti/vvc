@@ -13,13 +13,14 @@ import express from 'express';
 
 import fs from 'fs/promises';
 import * as http from 'http';
-import jsonpolice from 'jsonpolice';
+import * as jsonpolice from 'jsonpolice';
 import _ from 'lodash';
 import { open as openurl } from 'openurl';
 import * as path from 'path';
 import reload from 'reload';
 import { downloadAssets, hashWidgetAssets, scanWidgetAssets, uploadWidgetAssetChanges } from './lib/assets.js';
-import { type Config, meta, read as readConfig } from './lib/config.js';
+import { meta, read as readConfig } from './lib/config.js';
+import type { Config } from './lib/config.d.js';
 import { checkLoginAndVvcVersion } from './lib/startup.js';
 import { fetchStrings, fetchWidgetStrings, uploadWidgetStringChanges } from './lib/strings.js';
 import { retriever, ws, wsUrl } from './lib/ws.js';
