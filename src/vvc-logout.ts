@@ -3,7 +3,7 @@
 import { Command } from 'commander';
 import { meta, read as readConfig, unlink as unlinkConfig } from './lib/config.js';
 import type { Config } from './lib/config.d.js';
-import { checkLoginAndVvcVersion } from './lib/startup.js';
+import { checkVersion } from './lib/startup.js';
 import { ws } from './lib/ws.js';
 
 (async (): Promise<void> => {
@@ -16,8 +16,8 @@ import { ws } from './lib/ws.js';
       .option('-v, --verbose', 'Verbose output')
       .parse(process.argv);
   
-    await checkLoginAndVvcVersion();
     const config: Config = await readConfig();
+    await checkVersion();
     await ws(`clients/${config.username}`, { method: 'DELETE' });
     await unlinkConfig();
     console.log('Logged out');

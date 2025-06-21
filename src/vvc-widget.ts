@@ -22,7 +22,7 @@ import reload from 'reload';
 import { downloadAssets, hashWidgetAssets, scanWidgetAssets, uploadWidgetAssetChanges } from './lib/assets.js';
 import { meta, read as readConfig } from './lib/config.js';
 import type { Config } from './lib/config.d.js';
-import { checkLoginAndVvcVersion } from './lib/startup.js';
+import { checkVersion } from './lib/startup.js';
 import { fetchStrings, fetchWidgetStrings, uploadWidgetStringChanges } from './lib/strings.js';
 import { retriever, ws, wsUrl } from './lib/ws.js';
 
@@ -31,8 +31,8 @@ import { retriever, ws, wsUrl } from './lib/ws.js';
     const program = new Command();
     const options = program.opts();
 
-    await checkLoginAndVvcVersion();
     const config: Config = await readConfig();
+    await checkVersion();
 
     program
       .version(meta.version);

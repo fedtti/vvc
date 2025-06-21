@@ -3,8 +3,7 @@
 import { Command } from 'commander';
 import { input, confirm as inputConfirm, password as inputPassword } from '@inquirer/prompts';
 import { meta, read as readConfig, unlink as unlinkConfig, write as writeConfig } from './lib/config.js';
-import { checkLoginAndVvcVersion } from './lib/startup.js';
-import { ws } from './lib/ws.js';
+import { checkVersion } from './lib/startup.js';
 import type { Config } from './lib/config.d.js';
 import type { Client } from './vvc-login.d.js';
 
@@ -72,6 +71,8 @@ const getClient = async (server: string, account: string, username: string, pass
       process.exit(0);
     }
   }
+
+  await checkVersion();
 
   try {
     let account: string;

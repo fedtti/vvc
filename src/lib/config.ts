@@ -16,10 +16,6 @@ const configFilePath: string = `${configFileDir}/config.json`;
 
 let config: Promise<Config>;
 
-/**
- * Load the configuration file.
- * @returns {Promise<Config>}
- */
 const loadConfig = async (): Promise<Config> => {
   try {
     const data = await fs.readFile(configFilePath, { encoding: 'utf8' });
@@ -27,11 +23,6 @@ const loadConfig = async (): Promise<Config> => {
   } catch (error) {}
 };
 
-/**
- * Read the configuration file.
- * @param {boolean} [force=false] - If true, force a reload of the configuration file.
- * @returns {Promise<Config>}
- */
 export const read = async (force: boolean = false): Promise<Config> => {
   if (!config || !!force) {
     config = loadConfig();
@@ -39,11 +30,6 @@ export const read = async (force: boolean = false): Promise<Config> => {
   return config;
 };
 
-/**
- * Write a new configuration file.
- * @param {Config} newConfig - The new configuration object to write.
- * @returns {Promise<Config>}
- */
 export const write = async (newConfig: Config): Promise<Config> => {
   try {
     const stat = await fs.stat(configFileDir);
@@ -62,10 +48,6 @@ export const write = async (newConfig: Config): Promise<Config> => {
   return config = Promise.resolve(newConfig);
 };
 
-/**
- * Delete the existing configuration file.
- * @returns {Promise<void>}
- */
 export const unlink = (): Promise<void> => {
   return fs.unlink(configFilePath);
 };
