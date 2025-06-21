@@ -13,7 +13,7 @@ const options = program.opts();
 program
   // .version(meta.version)
   .option('-s, --server [FQDN]', '')
-  .option('-v, --verbose', 'Verbose output')
+  .option('-v, --verbose', '')
   .parse(process.argv);
 
 const getServer = async (account: string): Promise<string> => {
@@ -23,8 +23,8 @@ const getServer = async (account: string): Promise<string> => {
       redirect: 'manual'
     });
     if (response.status !== 200 && response.status !== 302 && response.status !== 307 || !response.headers.get('Location')) {
-      console.error('Invalid account.');
-      throw new Error('Invalid account.');
+      console.error(`\nInvalid account: ${account}.`);
+      process.exit(1);
     } else { 
       const url = new URL(Array.isArray(response.headers.get('Location')) ? response.headers.get('Location')[0] as string : response.headers.get('Location') as string);
       return url.host;
@@ -48,13 +48,20 @@ const getClient = async (server: string, account: string, username: string, pass
       })
     });
     if (!response.ok || response.status !== 201) {
-      console.error(`Login failed: ${JSON.stringify(response.body)}.`);
-      throw new Error('Login failed.');
+      if (!!options.verbose) {
+        const data = await response.json();
+        console.error(`\n${data.info}.`);
+        process.exit(1);
+      }
+      console.error(`\nLogin failed.`);
+      process.exit(1);
     }
     const data = await response.json();
     return data;
   } catch (error) {
 
+    console.error(`\nLogin failed.`);
+    process.exit(1);
   }
 }
 
@@ -112,7 +119,7 @@ const getClient = async (server: string, account: string, username: string, pass
     console.info('Logged in.');
     process.exit(0);
   } catch(error) {
-    if (options.verbose) {
+    if (!!options.verbose) {
       console.error(error.message);
       throw new Error(error.message);
     }
