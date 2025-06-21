@@ -25,11 +25,6 @@ const checkAccount = async (account: string): Promise<boolean> => {
   }
 };
 
-/**
- * 
- * @param account - The account ID to get the server for.
- * @returns 
- */
 const getServer = async (account: string): Promise<string> => {
   try {
     const response = await fetch(`https://www.vivocha.com/a/${account}/api/v3/openapi.json`, { method: 'HEAD'});
@@ -85,11 +80,15 @@ const getClient = async (server: string, account: string, username: string, pass
     //   throw new Error(error.message);
     // }
 
-    const account: string = await input({
-      message: 'Account ID',
-      required: true,
-      validate: checkAccount
-    });
+    let account: string;
+
+    if (!options.server) {
+      account = await input({
+        message: 'Account ID',
+        required: true,
+        validate: checkAccount
+      });
+    }
 
     const username: string = await input({
       message: 'Username',
