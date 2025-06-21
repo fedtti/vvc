@@ -39,11 +39,15 @@ import { retriever, wsUrl } from './lib/ws.js';
           }
           try {
             let schemaUrl = await wsUrl('schemas/string');
-            let parser = await jsonpolice.create({
-              "type": "array",
-              "items": {"$ref": schemaUrl},
-              "minItems": 2
-            }, { retriever });
+            let parser = await jsonpolice.create(
+              {
+                "type": "array",
+                "items": {"$ref": schemaUrl},
+                "minItems": 2
+              },
+              { scope: schemaUrl,
+                retriever }
+            );
 
             for (let f of files) {
               await access(f, fs.constants.R_OK).catch(() => {

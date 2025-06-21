@@ -45,7 +45,7 @@ export const retriever = async (url: string): Promise<any> => {
     if (!response.ok || response.status !== 200) {
       throw new RequestError(`Unexpected response: ${response.statusText}.`, null, response, null);
     }
-    const data: any = await response.json();
+    const data = await response.json();
     return data;
   } catch (error) {
     throw new RequestError(`Retrieval failed: ${error.message}.`, error, null, null);

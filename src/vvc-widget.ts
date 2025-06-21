@@ -12,6 +12,7 @@ import { confirm } from '@inquirer/prompts';
 import express from 'express';
 
 import fs from 'fs/promises';
+import { watch } from 'fs';
 import * as http from 'http';
 import * as jsonpolice from 'jsonpolice';
 import _ from 'lodash';
@@ -185,7 +186,10 @@ import { retriever, ws, wsUrl } from './lib/ws.js';
               "type": "array",
               "items": { "$ref": schemaUrl },
               "minItems": 2
-            }, { retriever });
+            }, {
+              scope: schemaUrl, 
+              retriever 
+            });
 
             // validate the strings
             await parser.validate(strings).catch(err => {
@@ -245,7 +249,7 @@ import { retriever, ws, wsUrl } from './lib/ws.js';
 
             // parse manifest with schema
             schemaUrl = await wsUrl('schemas/widget_create');
-            parser = await jsonpolice.create(schemaUrl, { retriever });
+            parser = await jsonpolice.create(schemaUrl, { scope: schemaUrl, retriever });
 
             // validate the strings
             await parser.validate(manifest).catch(err => {
@@ -538,7 +542,7 @@ import { retriever, ws, wsUrl } from './lib/ws.js';
             server.listen(options.port, options.host);
 
             if (options.watch) {
-              fs.watch(startDir, (event, filename) => {
+              watch(startDir, (event, filename) => {
                 reloader;
               });
             }
