@@ -4,9 +4,9 @@ import { ws } from './ws.js';
 
 /**
  * Check if the user is logged in and the Vivocha Command Line Tools version is compatible with the server.
- * @returns {Promise<any>} - Resolve with the server information if the user is logged in and the version is compatible.
+ * @returns {Promise<void>}
  */
-export const checkLoginAndVvcVersion = async (): Promise<any> => {
+export const checkLoginAndVvcVersion = async (): Promise<void> => {
   const config = await readConfig()
                          .catch(() => {
                            throw 'Configuration file not found: perform a login to create it.';

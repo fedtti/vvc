@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 
 import { Command } from 'commander';
-import { type Config, meta, read as readConfig } from './lib/config.js';
+import { meta, read as readConfig } from './lib/config.js';
+import type { Config } from './lib/config.d.js';
 import { checkLoginAndVvcVersion } from './lib/startup.js';
 
 (async (): Promise<void> => {
@@ -17,7 +18,7 @@ import { checkLoginAndVvcVersion } from './lib/startup.js';
     await checkLoginAndVvcVersion();
     const config: Config = await readConfig();
 
-    console.info(`Currently logged in to account ${config.accountId} on world ${config.server}.`);
+    console.info(`Currently logged in to account ${config.account} on world ${config.server}.`);
 
     if (options.verbose) {
       console.log(`Server info: ${JSON.stringify(config.info, null, 2)}`);

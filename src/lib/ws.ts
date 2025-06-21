@@ -2,12 +2,25 @@ import fs from 'fs';
 import { read as readConfig } from './config.js';
 
 export class RequestError extends Error {
-  constructor(public originalError: any, public response: any, public body: any) {
-    super();
+  constructor(message: string, public originalError: any, public response: any, public body: any) {
+    super(message);
+    this.name = 'RequestError';
   }
 }
 
-export const ws = async (path: string, opts?: any, okStatusCodes: number[] = [ 200, 201 ]): Promise<any> => {
+/**
+ * Constructs the WebSocket URL for the given path using the server and account ID from the configuration.
+ * @param {string} path - The path to the WebSocket API endpoint.
+ * @returns {Promise<string>} - The WebSocket URL for the given path.
+ * @throws {Error} - If the configuration cannot be read.
+ */
+export const wsUrl = async (path: string): Promise<string> => {
+  const config = await readConfig();
+  return Promise.resolve(`https://${config.server}/a/${config.account}/api/v3/${path}`) ||
+         Promise.reject(new Error('Configuration file not found: perform a login to create it.'));
+};
+
+export const ws = async (path: string, options?: any, okStatusCodes: number[] = [ 200, 201 ]): Promise<any> => {
   const config = await readConfig();
   const url = await wsUrl(path);
   // return new Promise((resolve, reject) => {
@@ -30,11 +43,6 @@ export const ws = async (path: string, opts?: any, okStatusCodes: number[] = [ 2
   // });
 };
 
-export async function wsUrl(path: string): Promise<string> {
-  const config = await readConfig();
-  return `https://${config.server}/a/${config.accountId}/api/v3/${path}`;
-};
-
 export const retriever = async (url: string): Promise<void> => {
   // return new Promise(function(resolve, reject) {
   //   request({ // TODO: replace with fetch().
@@ -50,6 +58,7 @@ export const retriever = async (url: string): Promise<void> => {
   //   });
   // });
 };
+
 
 export const download = async (url: string, filename: string): Promise<void> => {
   // return new Promise((resolve, reject) => {

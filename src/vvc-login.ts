@@ -2,7 +2,8 @@
 
 import { Command } from 'commander';
 import { input, password } from '@inquirer/prompts';
-import { type Config, meta, read as readConfig, unlink as unlinkConfig, write as writeConfig } from './lib/config.js';
+import { meta, read as readConfig, unlink as unlinkConfig, write as writeConfig } from './lib/config.js';
+import type { Config } from './lib/config.d.js';
 import { checkLoginAndVvcVersion } from './lib/startup.js';
 import { ws } from './lib/ws.js';
 
@@ -92,7 +93,7 @@ const getClient = async (server: string, account: string, user: string, password
   try {
     await checkLoginAndVvcVersion();
     const config: Config = await readConfig();
-    await ws(`clients/${config.userId}`, { method: 'DELETE' });
+    await ws(`clients/${config.username}`, { method: 'DELETE' });
     await unlinkConfig();
   } catch (error) {
     console.error(); // TODO
@@ -116,9 +117,9 @@ const getClient = async (server: string, account: string, user: string, password
     const client: any = await getClient(server, accountId, userId, userPassword);
     const config: Config = await readConfig().catch(() => { return {} as Config });
           config.server = server || 'www.vivocha.com';
-          config.accountId = accountId;
-          config.userId = client.id;
-          config.secret = client.secret;
+          config.account = accountId;
+          config.username = client.id;
+          config.password = client.secret;
     await writeConfig(config);
     console.info('Logged in.');
     process.exit(0);
