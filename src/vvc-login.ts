@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import { Command } from 'commander';
-import { input, password as inputPassword } from '@inquirer/prompts';
+import { input, confirm as inputConfirm, password as inputPassword } from '@inquirer/prompts';
 import { meta, read as readConfig, unlink as unlinkConfig, write as writeConfig } from './lib/config.js';
 import { checkLoginAndVvcVersion } from './lib/startup.js';
 import { ws } from './lib/ws.js';
@@ -60,7 +60,17 @@ const getClient = async (server: string, account: string, username: string, pass
   const oldConfig: Config = await readConfig();
 
   if (!!oldConfig) {
+    const confirm: boolean = await inputConfirm({
+      message: `You are already logged in as ${oldConfig.username} on ${oldConfig.account}. Do you want to log out?`,
+      default: false
+    });
 
+    if (!!confirm) {
+      await unlinkConfig();
+    } else {
+      console.info('Login cancelled.');
+      process.exit(0);
+    }
   }
 
   try {
