@@ -20,7 +20,9 @@ const loadConfig = async (): Promise<Config> => {
   try {
     const data = await fs.readFile(configFilePath, { encoding: 'utf8' });
     return JSON.parse(data);
-  } catch (error) {}
+  } catch (error) {
+    
+  }
 };
 
 export const read = async (force: boolean = false): Promise<Config> => {
@@ -45,7 +47,7 @@ export const write = async (newConfig: Config): Promise<Config> => {
     await fs.mkdir(configFileDir);
   }
   await fs.writeFile(configFilePath, JSON.stringify((({ info, ...keys }) => keys)(newConfig)));
-  return config = Promise.resolve(newConfig);
+  return config;
 };
 
 export const unlink = (): Promise<void> => {
