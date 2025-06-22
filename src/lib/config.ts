@@ -21,7 +21,8 @@ const loadConfig = async (): Promise<Config> => {
     const data = await fs.readFile(configFilePath, { encoding: 'utf8' });
     return JSON.parse(data);
   } catch (error) {
-    
+    console.error(`Error reading config file: ${error.message}.`);
+    throw new Error('Failed to load configuration. Please ensure the config file exists and is valid.');
   }
 };
 

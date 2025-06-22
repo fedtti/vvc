@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
-import { Command } from 'commander';
 import { input, confirm as inputConfirm, password as inputPassword } from '@inquirer/prompts';
+import { Command } from 'commander';
 import { meta, read as readConfig, unlink as unlinkConfig, write as writeConfig } from './lib/config.js';
 import { checkVersion } from './lib/startup.js';
 import type { Config } from './lib/config.d.js';
@@ -46,7 +46,7 @@ const getServer = async (account: string): Promise<string> => {
   }
 };
 
-const getClient = async (server: string, account: string, username: string, password: string): Promise<Client> => {
+const getClient = async (server: string, account: string, username: string, password: string): Promise<Client> => { // TODO: @fedtti - Check on Monday with valid credentials.
   try {
     const response = await fetch(`https://${server}/a/${account}/api/v3/clients`, {
       method: 'POST',
