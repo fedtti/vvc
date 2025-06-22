@@ -16,6 +16,13 @@ program
   .option('-v, --verbose', '')
   .parse(process.argv);
 
+/**
+ * Fetches the server FQDN for a given account ID by making a HEAD request to the Vivocha API.
+ * If the account is invalid or the server cannot be reached, it logs an error and exits the process. 
+ * @param {string} account - The account ID to check.
+ * @returns {Promise<string>} - Returns the server FQDN for the given account.
+ * @throws {Error} - Throws an error if the account is invalid or the server cannot be reached.
+ */
 const getServer = async (account: string): Promise<string> => {
   try {
     const response = await fetch(`https://www.vivocha.com/a/${account}/api/v3/openapi.json`, {
@@ -30,7 +37,12 @@ const getServer = async (account: string): Promise<string> => {
       return url.host;
     }
   } catch (error) {
-
+    if (!!options.verbose) {
+      console.error(`\nError in reaching the server, impossible to check the validity of: ${account}.`);
+    } else {
+      console.error(`\nInvalid account: ${account}.`);
+    }
+    process.exit(1);
   }
 };
 
