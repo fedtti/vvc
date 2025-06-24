@@ -16,19 +16,22 @@ const configFilePath: string = `${configFileDir}/config.json`;
 
 let config: Promise<Config>;
 
-const loadConfig = async (): Promise<Config> => {
+const loadConfig = async (login): Promise<Config> => {
   try {
     const data = await fs.readFile(configFilePath, { encoding: 'utf8' });
     return JSON.parse(data);
   } catch (error) {
+    if (!!login) {
+      return;
+    }
     console.error(`Error reading config file: ${error.message}.`);
     throw new Error('Failed to load configuration. Please ensure the config file exists and is valid.');
   }
 };
 
-export const read = async (force: boolean = false): Promise<Config> => {
+export const read = async (login: boolean = false, force: boolean = false): Promise<Config> => {
   if (!config || !!force) {
-    config = loadConfig();
+    config = loadConfig(login);
   }
   return config;
 };

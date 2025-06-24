@@ -78,13 +78,13 @@ const getClient = async (server: string, account: string, username: string, pass
 }
 
 (async (): Promise<void> => {
-  const oldConfig: Config = await readConfig();
+  const oldConfig: Config = await readConfig(true, false);
 
   if (!!oldConfig) {
-    await checkVersion();
+    // await checkVersion();
 
     const confirm: boolean = await inputConfirm({
-      message: `You are already logged in as ${oldConfig.username} on ${oldConfig.account}. Do you want to log out?`,
+      message: `You are already logged in on ${oldConfig.account}. Do you want to log out?`,
       default: false
     });
 
@@ -121,12 +121,13 @@ const getClient = async (server: string, account: string, username: string, pass
 
     const server: string = options.server || await getServer(account);
     const client: Client = await getClient(server, account, username, password);
-    const config: Config = await readConfig().catch(() => { return {} as Config });
-          config.server = server;
-          config.account = account;
-          config.username = client.id;
-          config.password = client.secret;
-    await checkVersion();
+    const config: Config = {
+      server,
+      account,
+      username: client.id,
+      password: client.secret
+    } as Config;
+    // await checkVersion();
     await writeConfig(config);
     console.info('Logged in.');
     process.exit(0);
