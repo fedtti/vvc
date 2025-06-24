@@ -20,14 +20,14 @@ import { ws } from './lib/ws.js';
     await checkVersion();
     await ws(`clients/${config.username}`, { method: 'DELETE' });
     await unlinkConfig();
-    console.log('Logged out');
+    console.info('Logged out.');
     process.exit(0);
   } catch(error) {
     if (options.verbose) {
       console.error(error.message);
     }
-    unlinkConfig().then(() => {
-      console.log('Logged out');
+    await unlinkConfig().then(() => {
+      console.info('Logged out.');
       process.exit(0);
     }, err => {
       console.error('Logout failed');
