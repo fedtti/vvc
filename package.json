@@ -1,5 +1,5 @@
 {
-  "name": "vvc",
+  "name": "@vivocha/vvc",
   "version": "10.0.0-alpha.1",
   "description": "Vivocha Command Line Tools",
   "keywords": [

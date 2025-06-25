@@ -46,7 +46,7 @@ const getServer = async (account: string): Promise<string> => {
   }
 };
 
-const getClient = async (server: string, account: string, username: string, password: string): Promise<Client> => { // TODO: @fedtti - Check on Monday with valid credentials.
+const getClient = async (server: string, account: string, username: string, password: string): Promise<Client> => {
   try {
     const response = await fetch(`https://${server}/a/${account}/api/v3/clients`, {
       method: 'POST',
