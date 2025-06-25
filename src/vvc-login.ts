@@ -5,6 +5,7 @@ import { Command } from 'commander';
 import { meta, read as readConfig, unlink as unlinkConfig, write as writeConfig } from './lib/config.js';
 import { checkVersion } from './lib/startup.js';
 import type { Config } from './lib/config.d.js';
+import { ws } from './lib/ws.js';
 import type { Client } from './vvc-login.d.js';
 
 const program = new Command();
@@ -89,6 +90,7 @@ const getClient = async (server: string, account: string, username: string, pass
     });
 
     if (!!confirm) {
+      await ws(`clients/${oldConfig.username}`, { method: 'DELETE' });
       await unlinkConfig();
     } else {
       console.info('\nLogin cancelled.');

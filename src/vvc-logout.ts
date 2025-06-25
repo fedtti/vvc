@@ -21,7 +21,7 @@ program
     const config: Config = await readConfig();
 
     const confirm: boolean = await inputConfirm({
-      message: `You are already logged in to account ${config.account}. Do you want to log out?`,
+      message: `You are logged in to account ${config.account}. Do you really want to log out?`,
       default: false
     });
 
@@ -38,12 +38,14 @@ program
     if (options.verbose) {
       console.error(error.message);
     }
-    await unlinkConfig().then(() => {
-      console.info('Logged out.');
+
+    try {
+      await unlinkConfig();
+      console.info('\nLogged out.');
       process.exit(0);
-    }, err => {
-      console.error('Logout failed');
+    } catch (error) {
+      console.error('\nLogout failed.');
       process.exit(1);
-    });
+    }
   }
 })();
