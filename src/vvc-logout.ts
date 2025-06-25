@@ -6,18 +6,18 @@ import type { Config } from './lib/config.d.js';
 import { checkVersion } from './lib/startup.js';
 import { ws } from './lib/ws.js';
 
-(async (): Promise<void> => {
-  const program = new Command();
-  const options = program.opts();
+const program = new Command();
+const options = program.opts();
 
+program
+  // .version(meta.version)
+  .option('-v, --verbose', 'Verbose output')
+  .parse(process.argv);
+
+(async (): Promise<void> => {
   try {
-    program
-      .version(meta.version)
-      .option('-v, --verbose', 'Verbose output')
-      .parse(process.argv);
-  
+    // await checkVersion();
     const config: Config = await readConfig();
-    await checkVersion();
     await ws(`clients/${config.username}`, { method: 'DELETE' });
     await unlinkConfig();
     console.info('Logged out.');

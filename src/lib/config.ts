@@ -22,7 +22,7 @@ const loadConfig = async (login: boolean): Promise<Config> => {
     return JSON.parse(data);
   } catch (error) {
     if (!!login) {
-      return;
+      return undefined as Config;
     }
     console.error('Failed to load configuration. Please ensure the config file exists and is valid.');
   }
