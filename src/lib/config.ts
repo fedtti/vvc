@@ -16,7 +16,7 @@ const configFilePath: string = `${configFileDir}/config.json`;
 
 let config: Promise<Config>;
 
-const loadConfig = async (login): Promise<Config> => {
+const loadConfig = async (login: boolean): Promise<Config> => {
   try {
     const data = await fs.readFile(configFilePath, { encoding: 'utf8' });
     return JSON.parse(data);
@@ -24,8 +24,7 @@ const loadConfig = async (login): Promise<Config> => {
     if (!!login) {
       return;
     }
-    console.error(`Error reading config file: ${error.message}.`);
-    throw new Error('Failed to load configuration. Please ensure the config file exists and is valid.');
+    console.error('Failed to load configuration. Please ensure the config file exists and is valid.');
   }
 };
 

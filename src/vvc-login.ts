@@ -38,7 +38,7 @@ const getServer = async (account: string): Promise<string> => {
     }
   } catch (error) {
     if (!!options.verbose) {
-      console.error(`\nError in reaching the server, impossible to check the validity of: ${account}.`);
+      console.error(`\nError in reaching the server, impossible to check the validity of account: ${account}.`);
     } else {
       console.error(`\nInvalid account: ${account}.`);
     }
@@ -65,14 +65,14 @@ const getClient = async (server: string, account: string, username: string, pass
         console.error(`\n${data.info}.`);
         process.exit(1);
       }
-      console.error(`\nLogin failed.`);
+      console.error('\nLogin failed.');
       process.exit(1);
     }
     const data = await response.json();
     return data;
   } catch (error) {
 
-    console.error(`\nLogin failed.`);
+    console.error('\nLogin failed.');
     process.exit(1);
   }
 }
@@ -84,14 +84,14 @@ const getClient = async (server: string, account: string, username: string, pass
     // await checkVersion();
 
     const confirm: boolean = await inputConfirm({
-      message: `You are already logged in on ${oldConfig.account}. Do you want to log out?`,
+      message: `You are already logged in to account ${oldConfig.account}. Do you want to log out?`,
       default: false
     });
 
     if (!!confirm) {
       await unlinkConfig();
     } else {
-      console.info('Login cancelled.');
+      console.info('\nLogin cancelled.');
       process.exit(0);
     }
   }

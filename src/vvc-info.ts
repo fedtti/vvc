@@ -17,15 +17,15 @@ program
   try {
     // await checkVersion();
     const config: Config = await readConfig();
-    console.info(`Currently logged in to account ${config.account} on ${config.server}.`);
-    process.exit(0);
+    if (!!config) {
+      console.info(`Currently logged in to account ${config.account} on ${config.server}.`);
+      process.exit(0);
+    }
   } catch (error) {
-    if (error === 'Not logged in' || error.toString().match(/^Config file not found/)) {
-      console.log('Not logged in');
-    } else if (!!options.verbose) {
+    if (!!options.verbose) {
       console.error(error.message);
     } else {
-      console.error('Boh. Failed');
+      console.error(error);
     }
     process.exit(1);
   }
