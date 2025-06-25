@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+import { confirm as inputConfirm } from '@inquirer/prompts';
 import { Command } from 'commander';
 import { meta, read as readConfig, unlink as unlinkConfig } from './lib/config.js';
 import type { Config } from './lib/config.d.js';
@@ -18,10 +19,21 @@ program
   try {
     // await checkVersion();
     const config: Config = await readConfig();
-    await ws(`clients/${config.username}`, { method: 'DELETE' });
-    await unlinkConfig();
-    console.info('Logged out.');
-    process.exit(0);
+
+    const confirm: boolean = await inputConfirm({
+      message: `You are already logged in to account ${config.account}. Do you want to log out?`,
+      default: false
+    });
+
+    if (!!confirm) {
+      await ws(`clients/${config.username}`, { method: 'DELETE' });
+      await unlinkConfig();
+      console.info('Logged out.');
+      process.exit(0);
+    } else {
+      console.info('\nLogout cancelled.');
+      process.exit(0);
+    }
   } catch(error) {
     if (options.verbose) {
       console.error(error.message);
