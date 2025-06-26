@@ -8,7 +8,7 @@
 
 ## Abstract
 
-This is a fork of the official [Vivocha Command Line Tools](https://github.com/vivocha/vvc) designed to be aligned with the latest Node.js LTS release — among other things.
+This is a fork of the official [Vivocha Command Line Tools](https://github.com/vivocha/vvc) designed to be aligned with the latest Node.js stable release — among other things.
 
 ## Requirements
 
