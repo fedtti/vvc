@@ -14,6 +14,12 @@ This is a fork of the official [Vivocha Command Line Tools](https://github.com/v
 
 ## Features
 
+### Back-End
+
 - Replace CJS with ESM
 - Replace `request()` with `fetch()`
+
+### Front-End
+
+- Replace PNG with SVG
 - Replace Webpack with Vite
