@@ -1,5 +1,5 @@
-import { EngagementInstance } from '@vivocha/public-entities';
-import { createEngagementInstance, EngagementInstanceOptions } from '@vivocha/public-entities/dist/wrappers/widget.js';
+import type { EngagementInstance } from '@vivocha/public-entities';
+import { type EngagementInstanceOptions, createEngagementInstance } from '@vivocha/public-entities/dist/wrappers/widget.js';
 import { innerScript } from '@vivocha/public-entities/dist/wrappers/widget_inner.js';
 import { DebuggerInstanceRenderer } from '@vivocha/public-entities/dist/wrappers/widget_debugger.js';
 

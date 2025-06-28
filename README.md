@@ -3,6 +3,7 @@
 - [Abstract](#abstract)
 - [Requirements](#requirements)
 - [Features](#features)
+  - [Continuous Integration / Continuous Delivery](#continuous-integration--continuous-delivery)
   - [Back-End](#back-end)
   - [Front-End](#front-end)
 
@@ -15,6 +16,8 @@ This is a fork of the official [Vivocha Command Line Tools](https://github.com/v
 - Node.js v24.x
 
 ## Features
+
+### Continuous Integration / Continuous Delivery
 
 ### Back-End
 

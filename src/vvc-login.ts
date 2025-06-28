@@ -80,15 +80,12 @@ const getClient = async (server: string, account: string, username: string, pass
 
 (async (): Promise<void> => {
   const oldConfig: Config = await readConfig(true, false);
-
   if (!!oldConfig) {
     // await checkVersion();
-
     const confirm: boolean = await inputConfirm({
       message: `You are already logged in to account ${oldConfig.account}. Do you want to log out?`,
       default: false
     });
-
     if (!!confirm) {
       await ws(`clients/${oldConfig.username}`, { method: 'DELETE' });
       await unlinkConfig();
@@ -97,10 +94,8 @@ const getClient = async (server: string, account: string, username: string, pass
       process.exit(0);
     }
   }
-
   try {
     let account: string;
-
     if (!options.server) {
       account = await input({
         message: 'Account ID',
