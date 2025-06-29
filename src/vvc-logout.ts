@@ -15,16 +15,19 @@ program
   .option('-v, --verbose', 'Verbose output')
   .parse(process.argv);
 
+/**
+ * Logs out the user by deleting their client session and unlinking the configuration.
+ * @returns {Promise<void>} - A promise that resolves when the logout operation is complete.
+ * @throws {Error} - Throws an error if the logout process fails or if unlinking the configuration fails.
+ */
 (async (): Promise<void> => {
   try {
     // await checkVersion();
     const config: Config = await readConfig();
-
     const confirm: boolean = await inputConfirm({
       message: `You are logged in to account ${config.account}. Do you really want to log out?`,
       default: false
     });
-
     if (!!confirm) {
       await ws(`clients/${config.username}`, { method: 'DELETE' });
       await unlinkConfig();
@@ -38,7 +41,6 @@ program
     if (options.verbose) {
       console.error(error.message);
     }
-
     try {
       await unlinkConfig();
       console.info('\nLogged out.');

@@ -15,8 +15,6 @@ program
 
 /**
  * Checks the current configuration and prints the account and server information.
- * If the configuration is valid, it exits with a success status.
- * If an error occurs, it logs the error message and exits with a failure status.
  * @returns {Promise<void>} - A promise that resolves when the operation is complete.
  * @throws {Error} - Throws an error if the configuration cannot be read or is invalid.
  */
